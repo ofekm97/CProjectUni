@@ -1,7 +1,7 @@
 #include "line_builders.h"
 #include "helpers.h"
 
-int getARE(Word *word)
+int get_ARE(Word *word)
 {
     int value = 0;
     if (word->A)
@@ -16,6 +16,7 @@ int getARE(Word *word)
     {
         value |= 1 << E_LOCATION;
     }
+    return value;
 }
 
 int get_second_word(Word *word)
@@ -29,13 +30,14 @@ int get_second_word(Word *word)
     return return_value;
 }
 
-int convert_words_to_ints(Word words[MAX_WORD_COUNT], int return_values[MAX_WORD_COUNT])
+int convert_words_to_ints(Word words[MAX_WORD_COUNT], int return_values[MAX_WORD_COUNT], int size)
 {
     int i = 0;
     int current_value = 0;
-    for (; i < MAX_WORD_COUNT; i++)
+    for (; i < size; i++)
     {
-        current_value |= getARE(words + i);
+        current_value = 0;
+        current_value |= get_ARE(words + i);
         /* seccond iteration is the func, dest and orig reg and addressing */
         if (i == 1)
         {
@@ -47,6 +49,7 @@ int convert_words_to_ints(Word words[MAX_WORD_COUNT], int return_values[MAX_WORD
         }
         return_values[i] = current_value;
     }
+    return return_values;
 }
 
 int convert_int_to_hex_line(int line_value, char hex_value[HEX_STRING_LENGTH])

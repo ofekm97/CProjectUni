@@ -11,7 +11,7 @@
 #define DEST_REG_LOCATION   (2)
 #define DEST_ADD_LOCATION   (0)
 
-#define MAX_WORD_COUNT      (4)
+#define MAX_WORD_COUNT      (6)
 #define ADDRESS_STEPS       (16)
 
 #define HEX_STRING_LENGTH   (15)
@@ -41,10 +41,17 @@ typedef struct Word
     short dest_reg;
     short dest_addressing;
     int opcode;
+    Word* next
 } Word;
 
 
-int convert_words_to_ints(Word words[MAX_WORD_COUNT], int return_values[MAX_WORD_COUNT]);
+typedef struct WordArray
+{
+    Word* words;
+    int size;
+} WordArray;
+
+int convert_words_to_ints(Word words[MAX_WORD_COUNT], int return_values[MAX_WORD_COUNT], int size);
 
 int convert_int_to_hex_line(int line_value, char hex_value[HEX_STRING_LENGTH]);
 
