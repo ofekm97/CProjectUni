@@ -56,6 +56,7 @@ int is_label_def(char* line, char* label_name)
 	{
 		if (line[i] == '\0')
 		{
+			label_name = NULL;
 			return 0;
 		}
 		
@@ -64,7 +65,8 @@ int is_label_def(char* line, char* label_name)
 
 	if (i > MAX_LABEL_LENGTH)
 	{
-		printf("Label name is too long");
+		printf("Error: label name is too long\n");
+		label_name = NULL;
 		return -1;
 	}
 	
@@ -73,19 +75,23 @@ int is_label_def(char* line, char* label_name)
 		label_name[i] = line[i];
 	}
 
+	label_name[i] = '\0';
+
 	if (isupper(label_name[0]) || islower(label_name[0]))
 	{
 		return 1;
 	}
 
-	printf("A label name must begin with an alphabetic character");
+	printf("Error: a label name must begin with an alphabetic character\n");
+	label_name = NULL;
 	return -1;
 }
 
-/* return 1-4 if this is a command sentence, 0 if not and -1 if there is an error in the command name */
-int is_command(char* line)
+/* return 1-4 if this is a command sentence, 0 if not and -1 if there is an error in the command name.
+   if its external or entry command, put the label name in "label_name" */
+int is_command(char* line, char* label_name)
 {
-	int i = 0;
+	int i = 0, j = 0;
 	
 	while (line[i] != '.')
 	{
@@ -107,17 +113,69 @@ int is_command(char* line)
 		return 2;
 	}
 
-	if (strncmp(&line[i + 1], "entry ", 6) == 0)
-	{
-		return 3;
-	}
-
 	if (strncmp(&line[i + 1], "extern ", 7) == 0)
 	{
-		return 4;
+		i =+ 8;
+		while (isspace(line[i]))
+		{
+			i++;
+		}
+
+		while (line[i] != '\0')
+		{
+			if (j >= MAX_LABEL_LENGTH)
+			{
+				printf("Error: label name is too long\n");
+				return -1;
+			}
+
+			label_name[j] = line[i];
+			j++, i++;
+		}
+
+		label_name[j] = '\0';
+		
+		if (isupper(label_name[0]) || islower(label_name[0]))
+		{
+			return 3;
+		}
+
+		printf("Error: a label name must begin with an alphabetic character\n");
+		return -1;
 	}
 
-	printf("Command name is not exist");
+	if (strncmp(&line[i + 1], "entry ", 6) == 0)
+	{
+		i =+ 7;
+		while (isspace(line[i]))
+		{
+			i++;
+		}
+
+		while (line[i] != '\0')
+		{
+			if (j >= MAX_LABEL_LENGTH)
+			{
+				printf("Error: label name is too long\n");
+				return -1;
+			}
+
+			label_name[j] = line[i];
+			j++, i++;
+		}
+
+		label_name[j] = '\0';
+		
+		if (isupper(label_name[0]) || islower(label_name[0]))
+		{
+			return 4;
+		}
+
+		printf("Error: a label name must begin with an alphabetic character\n");
+		return -1;
+	}
+
+	printf("Command name is not exist\n");
 	return -1;
 }
 
@@ -134,3 +192,17 @@ bool is_empty(char* line)
 
 	return (strcmp(line, "") == 0);
 }
+
+char* cut_as(char* str)
+{
+	int i = 0;
+
+	while (str[i] != '\0')
+	{
+		if (strcmp(&str[i], ".as") == 0)
+			str[i] = '\0';
+		i++;
+	}
+	return str;
+}
+

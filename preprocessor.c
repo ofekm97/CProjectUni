@@ -1,5 +1,4 @@
 #include "preprocessor.h"
-#include <ctype.h>
 #define MAX_FILE_NAME_LENGTH 31
 
 /* this function copy a string to another without the whitespace chars */

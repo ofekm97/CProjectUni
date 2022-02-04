@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include "macros_table.c"
+#include "macros_table.h"
 
 void Span_Macros(char* fileName);
 

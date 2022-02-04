@@ -41,7 +41,7 @@ typedef struct Word
     short dest_reg;
     short dest_addressing;
     int opcode;
-    Word* next
+    struct Word* next;
 } Word;
 
 
