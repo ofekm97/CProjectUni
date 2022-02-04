@@ -1,26 +1,5 @@
-/*#include "preprocessor.c"
-
-#include "helpers.c"
-*/
-#include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-/*
-#include "commands_tester.c"
-*/
-
-#define AMOUNT_OF_COMMANDS (16)
-
-typedef struct Command
-{
-    char *command_name;
-    int command_name_size;
-    int group_num;
-    int opcode;
-    int func;
-    int src_addressing_method;
-    int dest_addressing_method;
-} Command;
+#include "commands.h"
 
 Command *init_commands_list()
 {
@@ -90,28 +69,4 @@ int command_index(Command *command_list, char *word)
         }
     }
     return -1;
-}
-
-char *words_to_test[20] =
-    {"mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne", "jsr", "red", "prn", "rts", "stop", "ofek", "yarin", "mov1", "mov "};
-
-void test_commands_list()
-{
-    int i = 0;
-    Command *list = init_commands_list();
-    char *word;
-
-    for (; i < 20; i++)
-    {
-        word = words_to_test[i];
-        printf("%s: %d\n", word, command_index(list, word));
-    }
-    return;
-}
-
-int main(int argc, char *argv[])
-{
-    test_commands_list();
-
-    return 0;
 }
