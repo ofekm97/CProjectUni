@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdio.h>
-#include "commands.h"
+#include "methods.h"
 
 #ifndef HELP
 extern const char *words_to_test[20];

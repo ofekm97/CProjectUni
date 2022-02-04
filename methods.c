@@ -1,28 +1,5 @@
-/*#include "preprocessor.c"
-
-#include "helpers.c"
-*/
-#include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-/*
-#include "commands_tester.c"
-*/
-
-
-#define AMOUNT_OF_METHODS (16)
-
-typedef struct Method
-{
-    char *name;
-    int name_size;
-    int group_num;
-    int opcode;
-    int func;
-    int src_addressing_method;
-    int dest_addressing_method;
-} Method;
-
+#include "commands.h"
 
 Method *init_methods_list()
 {
@@ -76,7 +53,7 @@ void destroy_methods_list(Method *commands_list)
             }
         }
     }
-        free(commands_list);
+    free(commands_list);
 }
 
 int method_index(Method *command_list, char *word)
@@ -92,30 +69,4 @@ int method_index(Method *command_list, char *word)
         }
     }
     return -1;
-}
-
-char *words_to_test[20] =
-    {"mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne", "jsr", "red", "prn", "rts", "stop", "ofek", "yarin", "mov1", "mov "};
-
-void test_commands_list()
-{
-    int i = 0;
-    Method *list = init_methods_list();
-    char *word;
-
-    for (; i < 20; i++)
-    {
-        word = words_to_test[i];
-        printf("%s: %d\n", word, method_index(list, word));
-    }
-    
-    destroy_methods_list(list);
-    return;
-}
-
-int main(int argc, char *argv[])
-{
-    test_commands_list();
-
-    return 0;
 }
