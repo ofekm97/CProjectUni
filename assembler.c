@@ -1,11 +1,8 @@
-#include "preprocessor.c"
+#include "methods/methods_tester.h"
 
-#include"helpers.c"
-
-
-
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-	Span_Macros(argv[1]);
-	return 0;
+    test_commands_list();
+
+    return 0;
 }
