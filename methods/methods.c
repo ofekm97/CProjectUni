@@ -1,5 +1,6 @@
 #include <stdlib.h>
-#include "commands.h"
+#include <ctype.h>
+#include "methods.h"
 
 Method *init_methods_list()
 {
@@ -59,13 +60,17 @@ void destroy_methods_list(Method *commands_list)
 int method_index(Method *command_list, char *word)
 {
     Method current;
+    char last_char;
     int i = 0;
     for (; i < AMOUNT_OF_METHODS; i++)
     {
         current = command_list[i];
-        if (strcmp(word, current.name) == 0)
+        if (memcmp(word, current.name, current.name_size - 1) == 0)
         {
-            return i;
+            last_char = *(word + current.name_size - 1);
+            if (isspace(last_char) || last_char == '\0') {
+                return i;
+            }
         }
     }
     return -1;

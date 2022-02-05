@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 /*
 #include "commands_tester.c"
 */
@@ -22,7 +23,6 @@ typedef struct Method
     int src_addressing_method;
     int dest_addressing_method;
 } Method;
-
 
 Method *init_methods_list()
 {
@@ -76,19 +76,24 @@ void destroy_methods_list(Method *commands_list)
             }
         }
     }
-        free(commands_list);
+    free(commands_list);
 }
 
 int method_index(Method *command_list, char *word)
 {
     Method current;
+    char last_char;
     int i = 0;
     for (; i < AMOUNT_OF_METHODS; i++)
     {
         current = command_list[i];
-        if (strcmp(word, current.name) == 0)
+        if (memcmp(word, current.name, current.name_size - 1) == 0)
         {
-            return i;
+            last_char = *(word + current.name_size);
+            printf("current.name_size: %d,  ", current.name_size);
+            if (isspace(last_char) || last_char == '\0') {
+                return i;
+            }
         }
     }
     return -1;
