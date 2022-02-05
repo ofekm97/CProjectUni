@@ -1,6 +1,6 @@
-#pragma once
-
 #include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 #define AMOUNT_OF_METHODS (16)
 

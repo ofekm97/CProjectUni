@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <ctype.h>
 #include "methods.h"
 
 Method *init_methods_list()
@@ -67,7 +65,7 @@ int method_index(Method *command_list, char *word)
         current = command_list[i];
         if (memcmp(word, current.name, current.name_size - 1) == 0)
         {
-            last_char = *(word + current.name_size - 1);
+            last_char = *(word + current.name_size);
             if (isspace(last_char) || last_char == '\0') {
                 return i;
             }

@@ -1,6 +1,6 @@
 #include "methods_tester.h"
 
-const char *words_to_test[20] =
+char *words_to_test[20] =
     {"mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne", "jsr", "red", "prn", "rts", "stop", "ofek", "yarin", "mov1", "mov "};
 
 void test_commands_list()
