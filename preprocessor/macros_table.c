@@ -9,6 +9,7 @@ Macro* new_macro(char* name, char* text)
 	{
 		strcpy(tmp -> macroName, name);
 		strcpy(tmp -> macroText, text);
+		tmp -> nextMacro = NULL;
 	}
 
 	return tmp;

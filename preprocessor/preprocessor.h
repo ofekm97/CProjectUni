@@ -1,13 +1,11 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include "macros_table.c"
+#include "macros_table.h"
 
-void Span_Macros(char* fileName);
+void span_macros(char* fileName);
 
-void Clean_Whitespace_Chars(char* line, char* cleanLine);
+void clean_whitespace_chars(char* line, char* cleanLine);
 
-int Is_Macro_Def(char* line, char* name);
+int is_macro_def(char* line, char* name);
 
-void Get_Macro_text(char* macroText, FILE* fp1);
+void get_macro_text(char* macroText, FILE* fp1);
 
-Macro* Is_Macro_Call(Macro* m, char* line);
+Macro* is_macro_call(Macro* m, char* line);

@@ -1,9 +1,8 @@
 #include "preprocessor.h"
-#include <ctype.h>
 #define MAX_FILE_NAME_LENGTH 31
 
 /* this function copy a string to another without the whitespace chars */
-void Clean_Whitespace_Chars(char* line, char* cleanLine)
+void clean_whitespace_chars(char* line, char* cleanLine)
 {
 	int i = 0;
 	int j = 0;
@@ -21,12 +20,12 @@ void Clean_Whitespace_Chars(char* line, char* cleanLine)
 	cleanLine[j] = '\0';	
 }
 
-/* this function return 1 if string is a Macro definition line or 0 if not */
-int Is_Macro_Def(char* line, char* name)
+/* this function return 1 if string is a macro definition line or 0 if not */
+int is_macro_def(char* line, char* name)
 {
 	char cleanLine[MAX_LINE_LENGTH];
 
-	Clean_Whitespace_Chars(line, cleanLine);
+	clean_whitespace_chars(line, cleanLine);
 
 	if (strncmp("macro", cleanLine, 5) == 0)
 	{
@@ -36,8 +35,8 @@ int Is_Macro_Def(char* line, char* name)
 	return 0;
 }
 
-/* this function copy the Macro contest to macroText  */
-void Get_Macro_text(char* macroText, FILE* inputf)
+/* this function copy the macro contest to macroText  */
+void get_macro_text(char* macroText, FILE* inputf)
 {
 	char line[MAX_LINE_LENGTH] = "";
 	char cleanLine[MAX_LINE_LENGTH] = "";
@@ -46,22 +45,22 @@ void Get_Macro_text(char* macroText, FILE* inputf)
 	{
 		strcat(macroText, line);		
 		fgets(line, MAX_LINE_LENGTH + 1, inputf);
-		Clean_Whitespace_Chars(line, cleanLine);
+		clean_whitespace_chars(line, cleanLine);
 	}
 }
 
-/* this function return the Macro that called in the current line or null if its not Macro call line */
-Macro* Is_Macro_Call(Macro* m, char* line)
+/* this function return the macro that called in the current line or null if its not macro call line */
+Macro* is_macro_call(Macro* m, char* line)
 {
 	char cleanLine[MAX_LINE_LENGTH];
 
-	Clean_Whitespace_Chars(line, cleanLine);
+	clean_whitespace_chars(line, cleanLine);
 
 	return is_macro_name(m, cleanLine);
 }
 
 /* main function of the preprocessor. get a file.as and creat file.am with spread macros */
-void Span_Macros(char* fileName)
+void span_macros(char* fileName)
 {
 	Macro* macrosTable = NULL;
 	Macro* m = NULL;
@@ -92,17 +91,17 @@ void Span_Macros(char* fileName)
 			line[0] = c;
 			fgets(&line[1], MAX_LINE_LENGTH + 1, inputf);
 			
-			m = Is_Macro_Call(macrosTable, line);
+			m = is_macro_call(macrosTable, line);
 		
 			if (m != NULL)
 			{
 				fprintf(outputf, "%s", m -> macroText);
 			}
 			
-			else if (Is_Macro_Def(line, macroName) == 1)
+			else if (is_macro_def(line, macroName) == 1)
 			{
 				strcpy(macroText, "");
-				Get_Macro_text(macroText, inputf);
+				get_macro_text(macroText, inputf);
 				macrosTable = insert_macro(macrosTable, macroName, macroText);
 			}
 			

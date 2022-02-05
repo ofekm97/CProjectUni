@@ -1,5 +1,5 @@
-#include "line_builders.h"
-#include "helpers.h"
+#include "../helpers/line_builders.h"
+#include "../helpers/helpers.h"
 
 #define MAX_LABEL_LENGTH (31)
 #define DONT_KNOW (0)
