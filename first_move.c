@@ -6,8 +6,10 @@ bool first_move(char* file_name)
 	FILE* inputf = NULL;
 	Symbol* symbol_table = NULL;
 	Symbol* s = NULL;
+	Method* methods_list = NULL;
 	char line[MAX_LINE_LENGTH];
 	char label[MAX_LABEL_LENGTH];
+	char method_name[5];
 	char c;
 	int ic = BASE_ADDRESS, dc = 0;
 	int base = 0, offset = 0;
@@ -24,6 +26,8 @@ bool first_move(char* file_name)
 	
 	else
 	{
+		methods_list = init_methods_list();
+
 		c = getc(inputf);
 		while (c != EOF)
 		{
@@ -51,7 +55,7 @@ bool first_move(char* file_name)
 						if (s == NULL) /* new symbol */
 						{
 							symbol_table = insert_symbol(symbol_table, label, dc, DATA, false);
-							dc++;
+							dc++; /* shoud be: dc =+ number of new words from this line  */
 						}
 
 						else /* symbol already exist. set it */
@@ -61,23 +65,37 @@ bool first_move(char* file_name)
 							get_base_and_offset(s -> value, &base, &offset);
 							s -> base_add = base;
 							s -> offset = offset;
-							dc++;
+							dc++; /* shoud be: dc =+ number of new words from this line  */
 						}
 
 						break;
 
 					case 3:
-						printf("Error: A label was defined before external command.\n");
-						error_flag = true;
+						printf("Warning: A label was defined before external command. Ignore the label.\n");
 						break;
 					case 4:
-						printf("Error: A label was defined before entry command.\n");
-						error_flag = true;
+						printf("Warning: A label was defined before entry command. Ignore the label.\n");
 						break;
+
+					default:	 /* its not a command sentence */
+						get_method_name(line, true, method_name);
+
+						if (method_index(methods_list, method_name) != -1) /* method sentence */
+						{
+							symbol_table = insert_symbol(symbol_table, label, ic, CODE, false);
+							ic++; /* shoud be: ic =+ number of new words from this line  */
+						}
+
+						else
+						{
+							printf("Error: method name \"%s\" is not exist\n", method_name);
+							error_flag = true;
+						}
+						
 				}
 			}
 
-			else if (label_def == 0)/* no label definition in the beginnig of the line*/
+			else if (label_def == 0)/* no label definition in the beginnig of the line */
 			{
 				switch (is_command(line, label))
 				{
@@ -93,10 +111,9 @@ bool first_move(char* file_name)
 
 					case 3:      /* label define as external */
 						symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
-						dc++;
 						break;
 
-					case 4:
+					case 4:	     /* label define as entry */	
 						s = search_symbol(symbol_table, label);
 						if (s != NULL) /* symbol already exist */
 						{
@@ -109,6 +126,10 @@ bool first_move(char* file_name)
 						}
 
 						break;
+
+					default:	 /* its not a command sentence */
+						get_method_name(line, false, method_name);
+						
 				}
 			}
 

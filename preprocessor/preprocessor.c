@@ -2,25 +2,6 @@
 #include <ctype.h>
 #define MAX_FILE_NAME_LENGTH 31
 
-/* this function copy a string to another without the whitespace chars */
-void Clean_Whitespace_Chars(char* line, char* cleanLine)
-{
-	int i = 0;
-	int j = 0;
-
-	while (line[i] != '\0')
-	{
-		if (isspace(line[i]) == 0)
-		{
-			cleanLine[j] = line[i];
-			j++;
-		}
-		i++;
-	}
-
-	cleanLine[j] = '\0';	
-}
-
 /* this function return 1 if string is a Macro definition line or 0 if not */
 int Is_Macro_Def(char* line, char* name)
 {

@@ -23,6 +23,25 @@ int get_reg_number(char *reg_name)
     return -1;
 }
 
+/* this function copy a string to another without the whitespace chars */
+void clean_whitespace_chars(char* line, char* cleanLine)
+{
+	int i = 0;
+	int j = 0;
+
+	while (line[i] != '\0')
+	{
+		if (isspace(line[i]) == 0)
+		{
+			cleanLine[j] = line[i];
+			j++;
+		}
+		i++;
+	}
+
+	cleanLine[j] = '\0';	
+}
+
 /* Mutate the str string */
 char *trim(char *str)
 {
@@ -206,3 +225,21 @@ char* cut_as(char* str)
 	return str;
 }
 
+/* get a line and return the name of the method in the line (can be illegal method name). is_label_first is true if the beginning of the line is a label definition */
+void get_method_name(char* line, bool is_label_first, char* method_name)
+{
+	int i = 0, j = 0;
+
+	if (is_label_first)
+		for (; line[i] != ':'; i++);
+	
+	for (i++; isspace(line[i]); i++);
+
+	while (isspace(line[i]) == 0 && line[i] != '\0')
+	{
+		method_name[j] = line[i];
+		i++, j++;
+	}
+
+	method_name[j] = '\0';
+}
