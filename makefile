@@ -1,7 +1,7 @@
 all: assembler
 
 assembler: ./out/assembler.o ./out/macros_table.o ./out/preprocessor.o ./out/helpers.o ./out/symbol_table.o ./out/first_move.o ./out/line_builders.o ./out/methods.o ./out/methods_tester.o
-	gcc ./out/assembler.o ./out/macros_table.o ./out/preprocessor.o ./out/helpers.o ./out/symbol_table.o ./out/first_move.o ./out/line_builders.o ./out/assembler.o ./out/methods.o ./out/methods_tester.o -o assembler
+	gcc ./out/assembler.o ./out/macros_table.o ./out/preprocessor.o ./out/helpers.o ./out/symbol_table.o ./out/first_move.o ./out/line_builders.o ./out/methods.o ./out/methods_tester.o -o assembler
 
 ./out/assembler.o: assembler.c
 	gcc -Wall -ansi -pedantic -c assembler.c -o ./out/assembler.o
@@ -24,7 +24,7 @@ assembler: ./out/assembler.o ./out/macros_table.o ./out/preprocessor.o ./out/hel
 	gcc -ansi -Wall -pedantic -c ./symbols/symbol_table.c -o ./out/symbol_table.o
 ./out/first_move.o: ./symbols/first_move.c
 	gcc -ansi -Wall -pedantic -c ./symbols/first_move.c -o ./out/first_move.o
-# gcc -ansi -Wall -pedantic assembler.c commands.c commands_tester.c -o assembler
+
 # ./methods
 ./out/methods.o: ./methods/methods.c
 	gcc -Wall -ansi -pedantic -c ./methods/methods.c -o ./out/methods.o

@@ -233,13 +233,7 @@ void get_method_name(char* line, bool is_label_first, char* method_name)
 	if (is_label_first)
 		for (; line[i] != ':'; i++);
 	
-	for (i++; isspace(line[i]); i++);
+	for (; isspace(line[i]); i++);
 
-	while (isspace(line[i]) == 0 && line[i] != '\0')
-	{
-		method_name[j] = line[i];
-		i++, j++;
-	}
-
-	method_name[j] = '\0';
+	method_name = line + i;
 }

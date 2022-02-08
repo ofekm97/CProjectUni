@@ -7,7 +7,7 @@ bool first_move(char* file_name)
 	Symbol* symbol_table = NULL;
 	Symbol* s = NULL;
 	Method* methods_list = NULL;
-	char line[MAX_LINE_LENGTH];
+	char line[MAX_LINE_LENGTH+1];
 	char label[MAX_LABEL_LENGTH];
 	char method_name[5];
 	char c;
@@ -29,7 +29,7 @@ bool first_move(char* file_name)
 		while ((c = getc(inputf)) != EOF)
 		{
 			line[0] = c;
-			fgets(&line[1], MAX_LINE_LENGTH - 1, inputf); /* get a line */ 
+			fgets(&line[1], MAX_LINE_LENGTH, inputf); /* get a line */ 
 			
 			if (is_comment(line) == true || is_empty(line) == true) /* ignore comments or empty lines */
 			{

@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "macros_table.h"
-#include "helpers/helpers.h"
+#ifndef HELPERS
+	#define HELPERS
+	#include "../helpers/helpers.h"
+#endif
 
 void span_macros(char* fileName);
-
-void clean_whitespace_chars(char* line, char* cleanLine);
 
 int is_macro_def(char* line, char* name);
 

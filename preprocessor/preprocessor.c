@@ -1,25 +1,6 @@
 #include "preprocessor.h"
 #define MAX_FILE_NAME_LENGTH 31
 
-/* this function copy a string to another without the whitespace chars */
-void clean_whitespace_chars(char* line, char* cleanLine)
-{
-	int i = 0;
-	int j = 0;
-
-	while (line[i] != '\0')
-	{
-		if (isspace(line[i]) == 0)
-		{
-			cleanLine[j] = line[i];
-			j++;
-		}
-		i++;
-	}
-
-	cleanLine[j] = '\0';	
-}
-
 /* this function return 1 if string is a macro definition line or 0 if not */
 int is_macro_def(char* line, char* name)
 {
@@ -66,7 +47,7 @@ void span_macros(char* fileName)
 	Macro* m = NULL;
 	FILE* inputf = NULL;
 	FILE* outputf = NULL;
-	char line[MAX_LINE_LENGTH];
+	char line[MAX_LINE_LENGTH+1];
 	char macroName[MAX_MACRO_NAME_LENGTH];
 	char macroText[6 * MAX_LINE_LENGTH];
 	char fileNameCopy[MAX_FILE_NAME_LENGTH];
@@ -85,11 +66,10 @@ void span_macros(char* fileName)
 	{
 		outputf = fopen(strcat(fileNameCopy, ".am"), "w");
 	
-		c = getc(inputf);
-		while (c != EOF)
+		while (c = getc(inputf) != EOF)
 		{
 			line[0] = c;
-			fgets(&line[1], MAX_LINE_LENGTH + 1, inputf);
+			fgets(&line[1], MAX_LINE_LENGTH, inputf);
 			
 			m = is_macro_call(macrosTable, line);
 		
@@ -110,7 +90,6 @@ void span_macros(char* fileName)
 				fprintf(outputf, "%s", line);
 			}
 
-			c = getc(inputf);
 		}
 		
 		destroy_macro_table(macrosTable);
