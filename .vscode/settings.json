@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "methods.h": "c",
+        "string.h": "c",
+        "methods_tester.h": "c"
+    }
+}

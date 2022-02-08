@@ -9,6 +9,8 @@
 #define MAX_LABEL_LENGTH (31)
 #define MAX_MACRO_NAME_LENGTH (31)
 
+void clean_whitespace_chars(char* line, char* cleanLine);
+
 bool is_saved_word(char* value);
 
 int is_command(char* line, char* ext_label_name);
@@ -29,4 +31,6 @@ bool is_comment(char* line);
 bool is_empty(char* line);
 
 char* cut_as(char* str);
+
+void get_method_name(char* line, bool is_label_first, char* method_name);
 
