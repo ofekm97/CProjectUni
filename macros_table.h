@@ -1,6 +1,4 @@
-#include <string.h>
-#define MAX_MACRO_NAME_LENGTH 31
-#define MAX_LINE_LENGTH 80
+#include "helpers.h"
 
 typedef struct macro{
 

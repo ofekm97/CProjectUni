@@ -1,10 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "macros_table.c"
+#include "macros_table.h"
+#include "helpers/helpers.h"
 
 void Span_Macros(char* fileName);
-
-void Clean_Whitespace_Chars(char* line, char* cleanLine);
 
 int Is_Macro_Def(char* line, char* name);
 

@@ -1,12 +1,19 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
 
-#define BASE_ADRESS     (100)
+#define BASE_ADDRESS     (100)
+#define MAX_LINE_LENGTH (80)
 #define MAX_LABEL_LENGTH (31)
+#define MAX_MACRO_NAME_LENGTH (31)
+
+void clean_whitespace_chars(char* line, char* cleanLine);
 
 bool is_saved_word(char* value);
 
-int is_command(char* value);
+int is_command(char* line, char* ext_label_name);
 
 bool is_instruction(char* value);
 
@@ -22,4 +29,8 @@ int is_label_def(char* line, char* label_name);
 bool is_comment(char* line);
 
 bool is_empty(char* line);
+
+char* cut_as(char* str);
+
+void get_method_name(char* line, bool is_label_first, char* method_name);
 

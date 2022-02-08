@@ -49,7 +49,7 @@ int convert_words_to_ints(Word words[MAX_WORD_COUNT], int return_values[MAX_WORD
         }
         return_values[i] = current_value;
     }
-    return return_values;
+    return (int)return_values;
 }
 
 int convert_int_to_hex_line(int line_value, char hex_value[HEX_STRING_LENGTH])
@@ -74,11 +74,6 @@ int convert_int_to_hex_line(int line_value, char hex_value[HEX_STRING_LENGTH])
 
 int get_base_and_offset(int address, int *base, int *offset)
 {
-    if (address < BASE_ADRESS)
-    {
-        printf("ERROR - address is smaller then %d", BASE_ADRESS);
-        return 0;
-    }
     *offset = address % ADDRESS_STEPS;
     *base = address - *offset;
     return 1;
