@@ -7,7 +7,7 @@ bool first_move(char* file_name)
 	Symbol* symbol_table = NULL;
 	Symbol* s = NULL;
 	Method* methods_list = NULL;
-	char line[MAX_LINE_LENGTH];
+	char line[MAX_LINE_LENGTH+1];
 	char label[MAX_LABEL_LENGTH];
 	char method_name[5];
 	char c;
@@ -26,17 +26,13 @@ bool first_move(char* file_name)
 	
 	else
 	{
-		methods_list = init_methods_list();
-
-		c = getc(inputf);
-		while (c != EOF)
+		while ((c = getc(inputf)) != EOF)
 		{
 			line[0] = c;
 			fgets(&line[1], MAX_LINE_LENGTH, inputf); /* get a line */ 
 			
 			if (is_comment(line) == true || is_empty(line) == true) /* ignore comments or empty lines */
 			{
-				c = getc(inputf);	
 				continue;
 			}
 
@@ -138,7 +134,6 @@ bool first_move(char* file_name)
 				error_flag = true;
 			}
 
-			c = getc(inputf);
 		}
 
 		fix_symbol_table(symbol_table, ic); /* add the IC to the address of data symbols */
