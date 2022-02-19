@@ -3,19 +3,21 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#ifndef METHODS
+	#define METHODS
+	#include "../methods/methods.h"
+#endif
 
 #define BASE_ADDRESS     (100)
 #define MAX_LINE_LENGTH (80)
 #define MAX_LABEL_LENGTH (31)
 #define MAX_MACRO_NAME_LENGTH (31)
 
+bool check_lines_size(FILE* file, int max);
+
 void clean_whitespace_chars(char* line, char* cleanLine);
 
-bool is_saved_word(char* value);
-
 int is_command(char* line, char* ext_label_name);
-
-bool is_instruction(char* value);
 
 int remove_unused_whitespaces(char* line, char* result);
 
@@ -34,3 +36,8 @@ char* cut_as(char* str);
 
 void get_method_name(char* line, bool is_label_first, char* method_name);
 
+bool is_legal_label(Method* command_list, char* label);
+
+int commas_counter(char* line);
+
+bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_op);

@@ -1,5 +1,33 @@
 #include "helpers.h"
 
+bool check_lines_size(FILE* file, int max)
+{
+	int length = 0, line_number = 1;
+	char c;
+ 
+	while ((c = getc(file)) != EOF)
+	{
+		if (c == '\n')
+		{
+			length = 0;
+			line_number++;
+			continue;
+		}
+
+		length++;
+
+		if (length > max)
+		{
+			printf("Error: Line %d is longer than %d\n", line_number, max);
+			fseek(file, 0, SEEK_SET);
+			return false;
+		}
+	}
+	
+	fseek(file, 0, SEEK_SET);
+	return true;
+}
+
 int get_reg_number(char *reg_name)
 {
     char temp;
@@ -95,15 +123,18 @@ int is_label_def(char* line, char* label_name)
 	}
 
 	label_name[i] = '\0';
-
+	
 	if (isupper(label_name[0]) || islower(label_name[0]))
 	{
 		return 1;
 	}
-
-	printf("Error: a label name must begin with an alphabetic character\n");
-	label_name = NULL;
-	return -1;
+	
+	else
+	{
+		printf("Error: a label name must begin with an alphabetic character\n");
+		label_name = NULL;
+		return -1;
+	}
 }
 
 /* return 1-4 if this is a command sentence, 0 if not and -1 if there is an error in the command name.
@@ -134,7 +165,7 @@ int is_command(char* line, char* label_name)
 
 	if (strncmp(&line[i + 1], "extern ", 7) == 0)
 	{
-		i =+ 8;
+		i += 8;
 		while (isspace(line[i]))
 		{
 			i++;
@@ -165,7 +196,7 @@ int is_command(char* line, char* label_name)
 
 	if (strncmp(&line[i + 1], "entry ", 6) == 0)
 	{
-		i =+ 7;
+		i += 7;
 		while (isspace(line[i]))
 		{
 			i++;
@@ -233,7 +264,181 @@ void get_method_name(char* line, bool is_label_first, char* method_name)
 	if (is_label_first)
 		for (; line[i] != ':'; i++);
 	
-	for (; isspace(line[i]); i++);
+	for (i++; isspace(line[i]); i++);
 
-	method_name = line + i;
+	while (isspace(line[i]) == 0 && line[i] != '\0')
+	{
+		if (j == 4)
+		{
+			method_name = NULL;
+			return;
+		}
+
+		method_name[j] = line[i];
+		i++, j++;
+	}
+
+	method_name[j] = '\0';
+
+	if (strlen(method_name) == 4 && strcmp(method_name, "stop") != 0)
+	{
+		method_name = NULL;
+		return;
+	}
 }
+
+bool is_legal_label(Method* command_list, char* label)
+{
+	int num;
+	int i = 0;
+
+	while(label[i] != '\0')
+	{
+		if (isalnum(label[i]) == 0)
+		{
+			printf("Error: Label name has only alpha-numeric characters\n");
+			return false;
+		}
+
+		i++;
+	}
+
+	if (method_index(command_list, label) > 0)
+	{
+		printf("Error: Label name cannot be the same as method name\n");
+		return false;
+	}
+
+	if (label[0] == 'r')
+	{
+		num = atoi(&label[1]);
+
+		if (1 <= num && num <= 15) /* label name is "r1" - "r15" */
+		{
+			printf("Error: Label name cannot be the same as register name\n");
+			return false;
+		}
+
+		if (label[1] == '0' && label[2] == '\0') /* label name is "r0" */
+		{
+			printf("Error: Label name cannot be the same as register name\n");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+int commas_counter(char* line)
+{
+	int i = 0;
+	int counter = 0;
+
+	while (line[i] != '\0')
+	{
+		if (line[i] == ',')
+		{
+			counter++;
+			
+			if (line[i + 1] == ',') /* error. there are two commas in a row */
+				return -1;
+
+		}
+
+		i++;
+	}
+	
+	return counter;
+}
+
+bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_op)
+{
+	int i = 0, j = 0;
+	int commas_num;
+	char clean_line[MAX_LINE_LENGTH];
+
+	strcpy(orig_op, ""), strcpy(dest_op, ""); /* initialize */
+
+	if (is_label_first)
+	{
+		for (; line[i] != ':'; i++); /* skip the label */
+		i++;
+	}
+
+	for (; isspace(line[i]) != 0; i++); /* skip the whitespaces */
+	for (; isspace(line[i]) == 0; i++)  /* skip the method name */
+	{
+		if (line[i] == '\0') /* no operands */
+			return true;
+	}
+	
+	clean_whitespace_chars(&line[i], clean_line);
+
+	if (clean_line[0] == ',') /* comma before the first operand */
+	{
+		printf("Error: Comma location is illegal\n");
+		return false;
+	}
+
+	i = 0;
+
+	if (strcmp(clean_line, "") == 0) /* no operands */
+		return true;
+
+	commas_num = commas_counter(clean_line);
+
+	if (commas_num == 0) /* 1 operand */
+	{
+		while (clean_line[i] != '\0')
+		{
+			orig_op[i] = clean_line[i];
+			i++;
+		}
+		
+		orig_op[i] = '\0';
+		return true;
+	}
+
+	if (commas_num == 1) /* 2 operands */
+	{
+		while (clean_line[i] != ',')
+		{
+			orig_op[j] = clean_line[i];
+			i++, j++;
+		}
+
+		orig_op[j] = '\0';
+		i++;
+
+		if (clean_line[i] == '\0') /* comma after the last operand */
+		{
+			printf("Error: Comma location is illegal\n");
+			strcpy(orig_op, "");
+			return false;
+		}
+		
+		j = 0;
+
+		while (clean_line[i] != '\0')
+		{
+			dest_op[j] = clean_line[i];
+			i++, j++;
+		}
+		
+		dest_op[j] = '\0';
+
+		return true;
+	}
+
+	if (commas_num == -1)
+	{
+		printf("Error: Two commas in a row\n");
+		return false;
+	}
+	
+		/* more than 2 operands */
+		printf("Error: Too much operands or commas\n");
+		return false;
+}
+
+

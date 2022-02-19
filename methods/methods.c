@@ -60,6 +60,11 @@ int method_index(Method *command_list, char *word)
     Method current;
     char last_char;
     int i = 0;
+	
+	if (command_list == NULL) {
+	        printf("method list is null, returning -1");
+        return -1;
+    }
     for (; i < AMOUNT_OF_METHODS; i++)
     {
         current = command_list[i];

@@ -1,7 +1,7 @@
 all: assembler
 
-assembler: ./out/assembler.o ./out/macros_table.o ./out/preprocessor.o ./out/helpers.o ./out/symbol_table.o ./out/first_move.o ./out/line_builders.o ./out/methods.o ./out/methods_tester.o
-	gcc ./out/assembler.o ./out/macros_table.o ./out/preprocessor.o ./out/helpers.o ./out/symbol_table.o ./out/first_move.o ./out/line_builders.o ./out/methods.o ./out/methods_tester.o -o assembler
+assembler: ./out/assembler.o ./out/macros_table.o ./out/preprocessor.o ./out/helpers.o ./out/symbol_table.o ./out/first_move.o ./out/line_builders.o ./out/methods.o ./out/methods_tester.o ./out/conversion.o
+	gcc ./out/assembler.o ./out/macros_table.o ./out/preprocessor.o ./out/helpers.o ./out/symbol_table.o ./out/first_move.o ./out/line_builders.o ./out/methods.o ./out/methods_tester.o ./out/conversion.o -o assembler
 
 ./out/assembler.o: assembler.c
 	gcc -Wall -ansi -pedantic -c assembler.c -o ./out/assembler.o
@@ -31,3 +31,7 @@ assembler: ./out/assembler.o ./out/macros_table.o ./out/preprocessor.o ./out/hel
 
 ./out/methods_tester.o: ./methods/methods_tester.c
 	gcc -Wall -ansi -pedantic -c ./methods/methods_tester.c -o ./out/methods_tester.o
+
+# ./conversion
+./out/conversion.o: ./conversion/conversion.c
+	gcc -Wall -ansi -pedantic -c ./conversion/conversion.c -o ./out/conversion.o
