@@ -40,4 +40,6 @@ bool is_legal_label(Method* command_list, char* label);
 
 int commas_counter(char* line);
 
+bool check_operand(char* operand);
+
 bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_op);

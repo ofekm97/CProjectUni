@@ -351,11 +351,26 @@ int commas_counter(char* line)
 	return counter;
 }
 
+bool check_operand(char* operand)
+{
+	int i = 0;
+
+	for (; operand[i] != '\0'; i++)
+	{
+		if (isspace(operand[i]) != 0)
+		{
+			printf("unvalid operand\n");
+			return false;
+		}
+	}
+
+	return true;
+}
+
 bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_op)
 {
 	int i = 0, j = 0;
 	int commas_num;
-	char clean_line[MAX_LINE_LENGTH];
 
 	strcpy(orig_op, ""), strcpy(dest_op, ""); /* initialize */
 
@@ -371,46 +386,50 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 		if (line[i] == '\0') /* no operands */
 			return true;
 	}
-	
-	clean_whitespace_chars(&line[i], clean_line);
 
-	if (clean_line[0] == ',') /* comma before the first operand */
+	i++;
+	for (; isspace(line[i]) != 0; i++); /* skip the whitespaces */
+	
+	if (line[i] == ',') /* comma before the first operand */
 	{
 		printf("Error: Comma location is illegal\n");
 		return false;
 	}
 
-	i = 0;
-
-	if (strcmp(clean_line, "") == 0) /* no operands */
+	if (strcmp(&line[i], "") == 0) /* no operands */
 		return true;
 
-	commas_num = commas_counter(clean_line);
+	commas_num = commas_counter(&line[i]);
 
 	if (commas_num == 0) /* 1 operand */
 	{
-		while (clean_line[i] != '\0')
+		while (line[i] != '\0')
 		{
-			orig_op[i] = clean_line[i];
-			i++;
+			orig_op[j] = line[i];
+			i++, j++;
 		}
 		
-		orig_op[i] = '\0';
+		orig_op[j] = '\0';
+		orig_op = trim(orig_op);
+
+		if (check_operand(orig_op) == false)
+			return false;
+
 		return true;
 	}
 
 	if (commas_num == 1) /* 2 operands */
 	{
-		while (clean_line[i] != ',')
+		while (line[i] != ',')
 		{
-			orig_op[j] = clean_line[i];
+			orig_op[j] = line[i];
 			i++, j++;
 		}
 
 		orig_op[j] = '\0';
 		i++;
 
-		if (clean_line[i] == '\0') /* comma after the last operand */
+		if (line[i] == '\0') /* comma after the last operand */
 		{
 			printf("Error: Comma location is illegal\n");
 			strcpy(orig_op, "");
@@ -419,13 +438,18 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 		
 		j = 0;
 
-		while (clean_line[i] != '\0')
+		while (line[i] != '\0')
 		{
-			dest_op[j] = clean_line[i];
+			dest_op[j] = line[i];
 			i++, j++;
 		}
 		
 		dest_op[j] = '\0';
+		orig_op = trim(orig_op);
+		dest_op = trim(dest_op);
+
+		if (check_operand(orig_op) == false || check_operand(dest_op) == false)
+			return false;
 
 		return true;
 	}
