@@ -22,7 +22,7 @@ int is_command(char* line, char* ext_label_name);
 int remove_unused_whitespaces(char* line, char* result);
 
 /* reg number if so, else -1 */
-int get_reg_number(char* value);
+bool get_reg_number(char *reg_name, int* ret_value);
 
 char* trim(char *str);
 
@@ -43,3 +43,5 @@ int commas_counter(char* line);
 bool check_operand(char* operand);
 
 bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_op);
+
+bool get_number_from_string(char* str, signed int* value);

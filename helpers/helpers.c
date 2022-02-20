@@ -28,27 +28,24 @@ bool check_lines_size(FILE* file, int max)
 	return true;
 }
 
-int get_reg_number(char *reg_name)
+bool get_reg_number(char *reg_name, int* ret_value)
 {
-    char temp;
-    int ret_value = 0;
-    int amount = 0;
     reg_name = trim(reg_name);
     if (reg_name == NULL)
     {
-        return -1;
+        return false;
     }
     if (reg_name[0] != 'r')
     {
-        return -1;
+        return false;
     }
-    amount = sscanf(reg_name + 1, "%d%c", &ret_value, &temp);
-    if (amount == 1)
+	
+    if (get_number_from_string(reg_name+1, ret_value))
     {
-        if (ret_value <= 15 && 0 <= ret_value)
-            return ret_value;
+        if (*ret_value <= 15 && 0 <= *ret_value)
+            return true;
     }
-    return -1;
+    return false;
 }
 
 /* this function copy a string to another without the whitespace chars */
@@ -289,7 +286,6 @@ void get_method_name(char* line, bool is_label_first, char* method_name)
 
 bool is_legal_label(Method* command_list, char* label)
 {
-	int num;
 	int i = 0;
 
 	while(label[i] != '\0')
@@ -309,21 +305,10 @@ bool is_legal_label(Method* command_list, char* label)
 		return false;
 	}
 
-	if (label[0] == 'r')
+	if (get_reg_number(label, &i))
 	{
-		num = atoi(&label[1]);
-
-		if (1 <= num && num <= 15) /* label name is "r1" - "r15" */
-		{
-			printf("Error: Label name cannot be the same as register name\n");
-			return false;
-		}
-
-		if (label[1] == '0' && label[2] == '\0') /* label name is "r0" */
-		{
-			printf("Error: Label name cannot be the same as register name\n");
-			return false;
-		}
+		printf("Error: Label name cannot be the same as register name\n");
+		return false;
 	}
 
 	return true;
@@ -465,4 +450,12 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 		return false;
 }
 
-
+bool get_number_from_string(char* str, signed int* value) {
+	char temp;
+	int amount = sscanf(str, "%d%c", value, &temp);
+	if (amount == 1)
+    {
+        return true;
+    }
+	return false;
+}
