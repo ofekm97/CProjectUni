@@ -41,6 +41,8 @@ int conv_method(char* line, char* method, bool is_label_first)
 	if (split_operands(line, is_label_first, orig_op, dest_op) == false) /* operands format error */
 		return -1;
 
+	strcpy(orig_op,trim(orig_op));
+	strcpy(dest_op,trim(dest_op));
 	
 
 	return 1;
