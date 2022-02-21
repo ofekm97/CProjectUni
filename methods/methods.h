@@ -3,9 +3,14 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include "../helpers/helpers.h"
+
+#ifndef METHODS
+	#define METHODS
+	#include "../helpers/helpers.h"
+#endif
 
 #define AMOUNT_OF_METHODS (16)
+#define MAX_LINE_LENGTH (80)
 
 typedef struct Method
 {
@@ -17,6 +22,7 @@ typedef struct Method
     int src_addressing_method;
     int dest_addressing_method;
 } Method;
+
 
 typedef enum Addressing_Methods
 {

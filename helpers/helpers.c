@@ -459,13 +459,3 @@ bool get_number_from_string(char* str, signed int* value) {
 	return false;
 }
 
-
-bool get_number_from_string(char* str, signed int* value) {
-	char temp;
-	int amount = sscanf(str, "%d%c", value, &temp);
-	if (amount == 1)
-    {
-        return true;
-    }
-	return false;
-}

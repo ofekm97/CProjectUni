@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+
 #ifndef METHODS
 	#define METHODS
 	#include "../methods/methods.h"
@@ -12,6 +13,7 @@
 #define MAX_LINE_LENGTH (80)
 #define MAX_LABEL_LENGTH (31)
 #define MAX_MACRO_NAME_LENGTH (31)
+
 
 bool check_lines_size(FILE* file, int max);
 
