@@ -87,7 +87,6 @@ char *trim(char *str)
     return str;
 }
 
-
 /* return 1 if there is a label definition in the current line and put the label name in "label_name".
  return 0 if there isn't and return -1 if there is error in label definition */
 int is_label_def(char* line, char* label_name)
@@ -449,6 +448,17 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 		printf("Error: Too much operands or commas\n");
 		return false;
 }
+
+bool get_number_from_string(char* str, signed int* value) {
+	char temp;
+	int amount = sscanf(str, "%d%c", value, &temp);
+	if (amount == 1)
+    {
+        return true;
+    }
+	return false;
+}
+
 
 bool get_number_from_string(char* str, signed int* value) {
 	char temp;

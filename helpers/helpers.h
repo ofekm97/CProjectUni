@@ -21,8 +21,7 @@ int is_command(char* line, char* ext_label_name);
 
 int remove_unused_whitespaces(char* line, char* result);
 
-/* reg number if so, else -1 */
-bool get_reg_number(char *reg_name, int* ret_value);
+bool get_reg_number(char* reg_name, int* ret_value);
 
 char* trim(char *str);
 
