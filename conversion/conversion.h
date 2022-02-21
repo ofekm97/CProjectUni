@@ -1,8 +1,9 @@
 #include"../helpers/helpers.h"
 
-#define MAX_DATA_LENGTH (5) /* a word can hold integers between -2047 to 2048 (16 bits) so the length is 4 and one more for '-' */
+#define MAX_INTEGER (2048)
+#define MIN_INTEGER (-2047)
 
-int get_first_value(char* line);
+bool get_number_from_data_command(char* str, int* value);
 
 int quot_marks_counter(char* line);
 

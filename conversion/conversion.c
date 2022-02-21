@@ -1,23 +1,29 @@
 #include "conversion.h"
 
-int get_first_value(char* line) /* not final */
+bool get_number_from_data_command(char* str, int* value) 
 {
-	char str[MAX_DATA_LENGTH];
 	int i = 0;
+	int amount = sscanf(str, "%d", value);
 
-	for (; line[i] != ','; i++);
-	
-	if (i > MAX_DATA_LENGTH || (i > MAX_DATA_LENGTH - 1 && line[0] == '-'))
+	if (amount == 0)
+  	{
+        	return false;
+    	}
+
+	for (; isspace(str[i]) != 0 ; i++);
+
+	if (str[i] == '-')
+		i++;
+
+	for (; '0' <= str[i] && str[i] <= '9' ; i++);
+
+	for (; str[i] != ',' && str[i] != '\0'; i++)
 	{
-		printf("Error: Integer is too large\n");
-		return 2049;
+		if (isspace(str[i]) == 0)
+			return false;
 	}
 	
-	for (i = 0; line[i] != ','; i++)
-	{
-		str[i] = line[i];
-	}
-	return atoi(str);
+	return true;
 }
 
 int quot_marks_counter(char* line)
@@ -52,6 +58,7 @@ int conv_command(char* line,int command_kind, bool is_label_first)
 {
 	int i = 0;
 	int words_num = 0;
+	int data_value = 0;
 
 	if (command_kind == 1) /* data */
 	{
@@ -59,9 +66,30 @@ int conv_command(char* line,int command_kind, bool is_label_first)
 		i += 5;
 		for (; isspace(line[i]) != 0; i++);
 
-		/* push words */
+		while (line[i] != '\0')
+		{
+			if (get_number_from_data_command(line + i, &data_value) == false)
+			{
+				printf("Error: Data format is illegal\n");
+				return -1;
+			}
 
-		return 1;
+			/* a word can hold integers between -2047 to 2048 (16 bits) */
+			if (data_value < MIN_INTEGER || MAX_INTEGER < data_value)
+			{
+				printf("Error: Integer is too large\n");
+				return -1;
+			}
+			
+			for (; line[i] != ',' && line[i] != '\0'; i++);
+			i++;
+
+			/* push data_value */
+
+			words_num++;
+		}
+
+		return words_num;
 	}
 
 	if (command_kind == 2) /* string */
@@ -69,13 +97,13 @@ int conv_command(char* line,int command_kind, bool is_label_first)
 		if (quot_marks_counter(line) != 2)
 		{
 			printf("Error: String format is illegal\n");
-			return 0;
+			return -1;
 		}
 
 		for (; line[i] != '"'; i++);
 		for (i++; line[i] != '"'; i++)
 		{
-			/* push word- line[i] */
+			/* push word- Ascii(line[i]) */
 			words_num++;
 		}
 			/* push word- '\0' */
