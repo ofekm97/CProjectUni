@@ -1,7 +1,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include "../helpers/helpers.h"
 
 #define AMOUNT_OF_METHODS (16)
 
@@ -16,8 +18,18 @@ typedef struct Method
     int dest_addressing_method;
 } Method;
 
+typedef enum Addressing_Methods
+{
+    IMMEDIATE = 0,
+    DIRECT = 1,
+    INDEX = 2,
+    REG_DIRECT = 3
+} Addressing_Methods;
+
 Method *init_methods_list();
 
 void destroy_methods_list(Method *methods_list);
 
 int method_index(Method *methods_list, char *word);
+
+bool check_addressing_method(Method *method, char origin_operand[MAX_LINE_LENGTH+1], char dest_operand[MAX_LINE_LENGTH+1]);
