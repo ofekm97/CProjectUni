@@ -66,7 +66,7 @@ void span_macros(char* fileName)
 	{
 		outputf = fopen(strcat(fileNameCopy, ".am"), "w");
 	
-		while (c = getc(inputf) != EOF)
+		while ((c = getc(inputf)) != EOF)
 		{
 			line[0] = c;
 			fgets(&line[1], MAX_LINE_LENGTH, inputf);

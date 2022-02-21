@@ -9,10 +9,6 @@ LOOP:		prn	#48
 		  mov r3, W
 		endm
  		lea 	STR, r6
-		macro m2
-		  sub	r2, r3
-		 .data    -100
-		endm
  		m1
 		macro m3
 		endm
@@ -20,12 +16,11 @@ LOOP:		prn	#48
  		bne	END
  		cmp	val1, #-6
  		bne	END[r15]
-		m2
  		dec	K
 .entry MAIN
  		sub	LOOP[r10] ,r14
 END: 		stop
-STR:	       .string  “abcd”
+STR:	       .string  "abcd"
 LIST: 	       .data    6, -9
  	       .data    -100
 .entry K
