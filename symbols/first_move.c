@@ -107,7 +107,7 @@ bool first_move(char* file_name)
 							if (s == NULL) /* new symbol */
 							{
 								symbol_table = insert_symbol(symbol_table, label, ic, CODE, false);
-								ic += conv_method(line, method_name, true);
+								ic += conv_method(line, method_name, true, methods_list);
 							}
 							
 							else if (s -> attribute != DONT_KNOW) /* symbol is already exist */
@@ -123,7 +123,7 @@ bool first_move(char* file_name)
 								get_base_and_offset(s -> value, &base, &offset);
 								s -> base_add = base;
 								s -> offset = offset;
-								ic += conv_method(line, method_name, true);
+								ic += conv_method(line, method_name, true, methods_list);
 							}
 						}
 
@@ -187,7 +187,7 @@ bool first_move(char* file_name)
 
 						if (method_index(methods_list, method_name) != -1) /* method sentence */
 						{
-							ic += conv_method(line, method_name, false);
+							ic += conv_method(line, method_name, false, methods_list);
 						}
 						
 						else

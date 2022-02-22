@@ -40,16 +40,38 @@ int quot_marks_counter(char* line)
 	return counter;
 }
 
-int conv_method(char* line, char* method, bool is_label_first)
+int conv_method(char* line, char* method, bool is_label_first, Method* methods_list)
 {
 	char orig_op[MAX_LINE_LENGTH+1], dest_op[MAX_LINE_LENGTH+1];
+	Addressing_Methods orig_addressing_method = -1;
+	Addressing_Methods dest_addressing_method = -1;
+	Method* cur_method;
 
 	if (split_operands(line, is_label_first, orig_op, dest_op) == false) /* operands format error */
 		return -1;
 
 	strcpy(orig_op,trim(orig_op));
 	strcpy(dest_op,trim(dest_op));
+
+
+	cur_method = methods_list + method_index(methods_list, method);
 	
+	if (!check_operands_number(cur_method, orig_op, dest_op))
+	{
+		printf("Error: Number of operands does not match the method type\n");
+		return -1;
+	}
+
+	get_addresing_method(orig_op, &orig_addressing_method);
+	get_addresing_method(dest_op, &dest_addressing_method);
+
+	if (!(is_valid_addressing(cur_method, orig_addressing_method, true) && is_valid_addressing(cur_method, dest_addressing_method, false)))
+	{
+		printf("Error: Operand addressing method does not match the method type\n");
+		return -1;
+	}
+
+	/* push words */
 
 	return 1;
 }
@@ -87,6 +109,13 @@ int conv_command(char* line,int command_kind, bool is_label_first)
 			/* push data_value */
 
 			words_num++;
+		}
+
+		
+		if (line[i - 1] == ',') /* comma after the last operand */
+		{
+			printf("Error: Data format is illegal\n");
+			return -1;
 		}
 
 		return words_num;

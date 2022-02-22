@@ -283,36 +283,6 @@ void get_method_name(char* line, bool is_label_first, char* method_name)
 	}
 }
 
-bool is_legal_label(Method* command_list, char* label)
-{
-	int i = 0;
-
-	while(label[i] != '\0')
-	{
-		if (isalnum(label[i]) == 0)
-		{
-			printf("Error: Label name has only alpha-numeric characters\n");
-			return false;
-		}
-
-		i++;
-	}
-
-	if (method_index(command_list, label) > 0)
-	{
-		printf("Error: Label name cannot be the same as method name\n");
-		return false;
-	}
-
-	if (get_reg_number(label, &i))
-	{
-		printf("Error: Label name cannot be the same as register name\n");
-		return false;
-	}
-
-	return true;
-}
-
 int commas_counter(char* line)
 {
 	int i = 0;
@@ -389,14 +359,14 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 	{
 		while (line[i] != '\0')
 		{
-			orig_op[j] = line[i];
+			dest_op[j] = line[i];
 			i++, j++;
 		}
 		
-		orig_op[j] = '\0';
-		orig_op = trim(orig_op);
+		dest_op[j] = '\0';
+		dest_op = trim(dest_op);
 
-		if (check_operand(orig_op) == false)
+		if (check_operand(dest_op) == false)
 			return false;
 
 		return true;

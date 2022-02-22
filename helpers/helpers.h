@@ -4,11 +4,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#ifndef METHODS
-	#define METHODS
-	#include "../methods/methods.h"
-#endif
-
 #define BASE_ADDRESS     (100)
 #define MAX_LINE_LENGTH (80)
 #define MAX_LABEL_LENGTH (31)
@@ -36,8 +31,6 @@ bool is_empty(char* line);
 char* cut_as(char* str);
 
 void get_method_name(char* line, bool is_label_first, char* method_name);
-
-bool is_legal_label(Method* command_list, char* label);
 
 int commas_counter(char* line);
 
