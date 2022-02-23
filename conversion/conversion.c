@@ -40,25 +40,24 @@ int quot_marks_counter(char* line)
 	return counter;
 }
 
-int conv_method(char* line, char* method, bool is_label_first, Method* methods_list)
+int conv_method(char* line, char* method, bool is_label_first, Method* methods_list, int line_number)
 {
 	char orig_op[MAX_LINE_LENGTH+1], dest_op[MAX_LINE_LENGTH+1];
 	Addressing_Methods orig_addressing_method = -1;
 	Addressing_Methods dest_addressing_method = -1;
 	Method* cur_method;
 
-	if (split_operands(line, is_label_first, orig_op, dest_op) == false) /* operands format error */
+	if (split_operands(line, is_label_first, orig_op, dest_op, line_number) == false) /* operands format error */
 		return -1;
 
-	strcpy(orig_op,trim(orig_op));
+	strcpy(orig_op,trim(orig_op)); /* clean whitespaces */
 	strcpy(dest_op,trim(dest_op));
-
 
 	cur_method = methods_list + method_index(methods_list, method);
 	
 	if (!check_operands_number(cur_method, orig_op, dest_op))
 	{
-		printf("Error: Number of operands does not match the method type\n");
+		printf("Line %d- Error: Number of operands does not match the method type\n", line_number);
 		return -1;
 	}
 
@@ -67,7 +66,7 @@ int conv_method(char* line, char* method, bool is_label_first, Method* methods_l
 
 	if (!(is_valid_addressing(cur_method, orig_addressing_method, true) && is_valid_addressing(cur_method, dest_addressing_method, false)))
 	{
-		printf("Error: Operand addressing method does not match the method type\n");
+		printf("Line %d- Error: Operand addressing method does not match the method type\n", line_number);
 		return -1;
 	}
 
@@ -76,7 +75,7 @@ int conv_method(char* line, char* method, bool is_label_first, Method* methods_l
 	return 1;
 }
 
-int conv_command(char* line,int command_kind, bool is_label_first)
+int conv_command(char* line,int command_kind, bool is_label_first, int line_number)
 {
 	int i = 0;
 	int words_num = 0;
@@ -92,14 +91,14 @@ int conv_command(char* line,int command_kind, bool is_label_first)
 		{
 			if (get_number_from_data_command(line + i, &data_value) == false)
 			{
-				printf("Error: Data format is illegal\n");
+				printf("Line %d- Error: Data format is illegal\n", line_number);
 				return -1;
 			}
 
 			/* a word can hold integers between -2047 to 2048 (16 bits) */
 			if (data_value < MIN_INTEGER || MAX_INTEGER < data_value)
 			{
-				printf("Error: Integer is too large\n");
+				printf("Line %d- Error: Integer is too large\n", line_number);
 				return -1;
 			}
 			
@@ -114,7 +113,7 @@ int conv_command(char* line,int command_kind, bool is_label_first)
 		
 		if (line[i - 1] == ',') /* comma after the last operand */
 		{
-			printf("Error: Data format is illegal\n");
+			printf("Line %d- Error: Data format is illegal\n", line_number);
 			return -1;
 		}
 
@@ -125,7 +124,7 @@ int conv_command(char* line,int command_kind, bool is_label_first)
 	{
 		if (quot_marks_counter(line) != 2)
 		{
-			printf("Error: String format is illegal\n");
+			printf("Line %d- Error: String format is illegal\n", line_number);
 			return -1;
 		}
 

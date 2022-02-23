@@ -35,7 +35,7 @@ void destroy_methods_list(Method *methods_list);
 
 int method_index(Method *methods_list, char *word);
 
-bool is_legal_label(Method* command_list, char* label);
+bool is_legal_label(Method* command_list, char* label, int line_number);
 
 bool is_valid_addressing(Method *method, Addressing_Methods operand_type, bool is_source);
 

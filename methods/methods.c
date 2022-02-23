@@ -80,7 +80,7 @@ int method_index(Method *command_list, char *word)
     return -1;
 }
 
-bool is_legal_label(Method* command_list, char* label)
+bool is_legal_label(Method* command_list, char* label, int line_number)
 {
 	int i = 0;
 
@@ -88,7 +88,7 @@ bool is_legal_label(Method* command_list, char* label)
 	{
 		if (isalnum(label[i]) == 0)
 		{
-			printf("Error: Label name has only alpha-numeric characters\n");
+			printf("Line %d- Error: Label name has only alpha-numeric characters\n", line_number);
 			return false;
 		}
 
@@ -97,13 +97,13 @@ bool is_legal_label(Method* command_list, char* label)
 
 	if (method_index(command_list, label) > 0)
 	{
-		printf("Error: Label name cannot be the same as method name\n");
+		printf("Line %d- Error: Label name cannot be the same as method name\n", line_number);
 		return false;
 	}
 
 	if (get_reg_number(label, &i))
 	{
-		printf("Error: Label name cannot be the same as register name\n");
+		printf("Line %d- Error: Label name cannot be the same as register name\n", line_number);
 		return false;
 	}
 
