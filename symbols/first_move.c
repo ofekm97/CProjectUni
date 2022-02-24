@@ -1,10 +1,9 @@
 #include "first_move.h"
 
 /* return true if the first move succeeded or false if not */
-bool first_move(char* file_name)
+bool first_move(char* file_name, Symbol* symbol_table)
 {
 	FILE* inputf = NULL;
-	Symbol* symbol_table = NULL;
 	Symbol* s = NULL;
 	Method* methods_list = NULL;
 	WordArray* data_img = NULL;
@@ -18,6 +17,7 @@ bool first_move(char* file_name)
 	int base = 0, offset = 0;
 	int command_kind;
 	int label_def;
+	int new_words_num = 0;
 	bool error_flag = false;
 
 	inputf = fopen(file_name, "r");
@@ -68,7 +68,12 @@ bool first_move(char* file_name)
 						if (s == NULL) /* new symbol */
 						{
 							symbol_table = insert_symbol(symbol_table, label, dc, DATA, false);
-							dc += conv_command(line, command_kind, true, line_number);
+
+							new_words_num = conv_command(line, command_kind, line_number);
+							if (new_words_num < 0)
+								error_flag = true;
+
+							dc += new_words_num;
 						}
 
 						else if (s -> attribute != DONT_KNOW) /* symbol is already exist */
@@ -84,7 +89,12 @@ bool first_move(char* file_name)
 							get_base_and_offset(s -> value, &base, &offset);
 							s -> base_add = base;
 							s -> offset = offset;
-							dc += conv_command(line, command_kind, true, line_number);
+
+							new_words_num = conv_command(line, command_kind, line_number);
+							if (new_words_num < 0)
+								error_flag = true;
+
+							dc += new_words_num;
 						}
 
 						break;
@@ -109,7 +119,12 @@ bool first_move(char* file_name)
 							if (s == NULL) /* new symbol */
 							{
 								symbol_table = insert_symbol(symbol_table, label, ic, CODE, false);
-								ic += conv_method(line, method_name, true, methods_list, line_number);
+
+								new_words_num = conv_method(line, method_name, true, methods_list, line_number);
+								if (new_words_num < 0)
+									error_flag = true;
+
+								ic += new_words_num;
 							}
 							
 							else if (s -> attribute != DONT_KNOW) /* symbol is already exist */
@@ -125,7 +140,12 @@ bool first_move(char* file_name)
 								get_base_and_offset(s -> value, &base, &offset);
 								s -> base_add = base;
 								s -> offset = offset;
-								ic += conv_method(line, method_name, true, methods_list, line_number);
+
+								new_words_num = conv_method(line, method_name, true, methods_list, line_number);
+								if (new_words_num < 0)
+									error_flag = true;
+
+								ic += new_words_num;
 							}
 						}
 
@@ -147,11 +167,19 @@ bool first_move(char* file_name)
 						break;
 
 					case 1:
-						dc += conv_command(line, 1, true, line_number);
+						new_words_num = conv_command(line, 1, line_number);
+						if (new_words_num < 0)
+							error_flag = true;
+
+						dc += new_words_num;
 						break;
 
 					case 2:
-						dc += conv_command(line, 2, true, line_number);
+						new_words_num = conv_command(line, 2, line_number);
+						if (new_words_num < 0)
+							error_flag = true;
+
+						dc += new_words_num;
 						break;
 
 					case 3:      /* label define as external */
@@ -189,7 +217,11 @@ bool first_move(char* file_name)
 
 						if (method_index(methods_list, method_name) != -1) /* method sentence */
 						{
-							ic += conv_method(line, method_name, false, methods_list, line_number);
+							new_words_num = conv_method(line, method_name, false, methods_list, line_number);
+							if (new_words_num < 0)
+								error_flag = true;
+
+							ic += new_words_num;
 						}
 						
 						else
@@ -209,7 +241,7 @@ bool first_move(char* file_name)
 
 		fix_symbol_table(symbol_table, ic); /* add the IC to the address of data symbols */
 		if (error_flag == false)
-			print_symbols(symbol_table);	
+			print_symbols(symbol_table);
 	}
 	return (!error_flag);
 }

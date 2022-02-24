@@ -61,8 +61,8 @@ int conv_method(char* line, char* method, bool is_label_first, Method* methods_l
 		return -1;
 	}
 
-	get_addresing_method(orig_op, &orig_addressing_method);
-	get_addresing_method(dest_op, &dest_addressing_method);
+	get_addresing_method(orig_op, &orig_addressing_method, line_number);
+	get_addresing_method(dest_op, &dest_addressing_method, line_number);
 
 	if (!(is_valid_addressing(cur_method, orig_addressing_method, true) && is_valid_addressing(cur_method, dest_addressing_method, false)))
 	{
@@ -75,7 +75,7 @@ int conv_method(char* line, char* method, bool is_label_first, Method* methods_l
 	return 1;
 }
 
-int conv_command(char* line,int command_kind, bool is_label_first, int line_number)
+int conv_command(char* line,int command_kind, int line_number)
 {
 	int i = 0;
 	int words_num = 0;

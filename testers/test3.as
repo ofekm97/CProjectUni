@@ -1,2 +1,0 @@
-.extern  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-.extern    sss

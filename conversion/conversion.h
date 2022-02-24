@@ -8,4 +8,4 @@ int quot_marks_counter(char* line);
 
 int conv_method(char* line, char* method, bool is_label_first, Method* methods_list, int line_number);
 
-int conv_command(char* line,int command_kind, bool is_label_first, int line_number);
+int conv_command(char* line,int command_kind, int line_number);

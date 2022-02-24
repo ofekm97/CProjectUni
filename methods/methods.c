@@ -101,7 +101,7 @@ bool is_legal_label(Method* command_list, char* label, int line_number)
 		return false;
 	}
 
-	if (get_reg_number(label, &i))
+	if (get_reg_number(label, &i, line_number))
 	{
 		printf("Line %d- Error: Label name cannot be the same as register name\n", line_number);
 		return false;
@@ -120,7 +120,7 @@ bool is_valid_addressing(Method *method, Addressing_Methods operand_type, bool i
     return (bool)(is_source ? (method->src_addressing_method & bit_wise_addressing) : (method->dest_addressing_method & bit_wise_addressing));
 }
 
-bool get_index_or_direct_addressing(char *operand, Addressing_Methods *addressing_method)
+bool get_index_or_direct_addressing(char *operand, Addressing_Methods *addressing_method, int line_number)
 {
     int braces_index = 0, reg_number = -1;
     char reg[4];
@@ -139,7 +139,7 @@ bool get_index_or_direct_addressing(char *operand, Addressing_Methods *addressin
         memcpy(reg, temp + 1, 3);
         reg[3] = '\0';
 
-        if (get_reg_number(reg, &reg_number))
+        if (get_reg_number(reg, &reg_number, line_number))
         {
             if (10 <= reg_number || reg_number <= 15)
             {
@@ -159,7 +159,7 @@ bool get_index_or_direct_addressing(char *operand, Addressing_Methods *addressin
     return true;
 }
 
-bool get_addresing_method(char *operand, Addressing_Methods *addressing_method)
+bool get_addresing_method(char *operand, Addressing_Methods *addressing_method, int line_number)
 {
     signed int reg_number = -1;
 
@@ -169,7 +169,7 @@ bool get_addresing_method(char *operand, Addressing_Methods *addressing_method)
 	 return true;
     }
 
-    if (get_reg_number(operand, (signed int *)&reg_number))
+    if (get_reg_number(operand, (signed int *)&reg_number, line_number))
     {
         *addressing_method = REG_DIRECT;
         return true;
@@ -184,7 +184,7 @@ bool get_addresing_method(char *operand, Addressing_Methods *addressing_method)
         }
     }
 
-    if (get_index_or_direct_addressing(operand, addressing_method))
+    if (get_index_or_direct_addressing(operand, addressing_method, line_number))
     {
         return true;
     }

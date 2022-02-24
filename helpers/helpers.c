@@ -28,7 +28,7 @@ bool check_lines_size(FILE* file, int max)
 	return true;
 }
 
-bool get_reg_number(char *reg_name, int* ret_value)
+bool get_reg_number(char *reg_name, int* ret_value, int line_number)
 {
     reg_name = trim(reg_name);
     if (reg_name == NULL)
@@ -45,6 +45,8 @@ bool get_reg_number(char *reg_name, int* ret_value)
         if (*ret_value <= 15 && 0 <= *ret_value)
             return true;
     }
+ 
+    printf("Line %d- Error: Register number is not exist\n", line_number);
     return false;
 }
 
@@ -127,7 +129,7 @@ int is_label_def(char* line, char* label_name, int line_number)
 	
 	else
 	{
-		printf("Line %d- Error: a label name must begin with an alphabetic character\n", line_number);
+		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
 		label_name = NULL;
 		return -1;
 	}
@@ -186,7 +188,7 @@ int is_command(char* line, char* label_name, int line_number)
 			return 3;
 		}
 
-		printf("Line %d- Error: a label name must begin with an alphabetic character\n", line_number);
+		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
 		return -1;
 	}
 
@@ -217,7 +219,7 @@ int is_command(char* line, char* label_name, int line_number)
 			return 4;
 		}
 
-		printf("Line %d- Error: a label name must begin with an alphabetic character\n", line_number);
+		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
 		return -1;
 	}
 

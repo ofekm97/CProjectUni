@@ -39,6 +39,8 @@ bool is_legal_label(Method* command_list, char* label, int line_number);
 
 bool is_valid_addressing(Method *method, Addressing_Methods operand_type, bool is_source);
 
-bool get_addresing_method(char *operand, Addressing_Methods *addressing_method);
+bool get_index_or_direct_addressing(char *operand, Addressing_Methods *addressing_method, int line_number);
+
+bool get_addresing_method(char *operand, Addressing_Methods *addressing_method, int line_number);
 
 bool check_operands_number(Method *method, char origin_operand[MAX_LINE_LENGTH+1], char dest_operand[MAX_LINE_LENGTH+1]);
