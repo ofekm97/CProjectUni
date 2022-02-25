@@ -15,7 +15,6 @@ bool first_move(char* file_name)
 	char c;
 	int line_number = 0;
 	int ic = BASE_ADDRESS, dc = 0;
-	int base = 0, offset = 0;
 	int command_kind;
 	int label_def;
 	int new_words_num = 0;
@@ -41,11 +40,8 @@ bool first_move(char* file_name)
 			fgets(&line[1], MAX_LINE_LENGTH, inputf); /* get a line */
 			line_number++;
 			
-			
 			if (is_comment(line) == true || is_empty(line) == true) /* ignore comments or empty lines */
-			{
 				continue;
-			}
 
 			label_def = is_label_def(line, label, line_number);
 
@@ -77,25 +73,10 @@ bool first_move(char* file_name)
 							dc += new_words_num;
 						}
 
-						else if (s -> attribute != DONT_KNOW) /* symbol is already exist */
+						else /* symbol is already exist */
 						{
 							printf("Line %d- Error: Label \"%s\" has already defined\n",line_number, label);
 							error_flag = true;
-						}
-
-						else /* symbol already defined as entry. set it */
-						{
-							s -> value = dc;
-							s -> attribute = DATA;
-							get_base_and_offset(s -> value, &base, &offset);
-							s -> base_add = base;
-							s -> offset = offset;
-
-							new_words_num = conv_command(line, command_kind, line_number);
-							if (new_words_num < 0)
-								error_flag = true;
-
-							dc += new_words_num;
 						}
 
 						break;
@@ -128,26 +109,12 @@ bool first_move(char* file_name)
 								ic += new_words_num;
 							}
 							
-							else if (s -> attribute != DONT_KNOW) /* symbol is already exist */
+							else /* symbol is already exist */
 							{
 								printf("Line %d- Error: Label \"%s\" has already defined\n",line_number, label);
 								error_flag = true;
 							}
 
-							else /* symbol already defined as entry. set it */
-							{
-								s -> value = ic;
-								s -> attribute = CODE;
-								get_base_and_offset(s -> value, &base, &offset);
-								s -> base_add = base;
-								s -> offset = offset;
-
-								new_words_num = conv_method(line, method_name, true, methods_list, line_number);
-								if (new_words_num < 0)
-									error_flag = true;
-
-								ic += new_words_num;
-							}
 						}
 
 						else
@@ -193,24 +160,7 @@ bool first_move(char* file_name)
 						symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
 						break;
 
-					case 4:	     /* label define as entry */	
-						if (is_legal_label(methods_list, label, line_number) == false) /* check if label name is legal */
-						{	
-							error_flag = true;
-							continue;
-						}
-
-						s = search_symbol(symbol_table, label);
-						if (s != NULL) /* symbol already exist */
-						{
-							s -> entry = true;
-						}
-					
-						else /* new symbol */
-						{
-							symbol_table = insert_symbol(symbol_table, label, 0, DONT_KNOW, true);
-						}
-
+					case 4:	     /* label define as entry */
 						break;
 
 					default:	 /* its not a command sentence */
