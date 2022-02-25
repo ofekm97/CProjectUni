@@ -3,4 +3,4 @@
 	#include "symbol_table.h"
 #endif
 
-bool second_move(char* file_name, Symbol* symbol_table);
+bool second_move(FILE* inputf, Symbol* symbol_table);

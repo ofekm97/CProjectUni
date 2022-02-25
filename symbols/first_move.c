@@ -1,10 +1,11 @@
 #include "first_move.h"
 
 /* return true if the first move succeeded or false if not */
-bool first_move(char* file_name, Symbol* symbol_table)
+bool first_move(char* file_name)
 {
 	FILE* inputf = NULL;
 	Symbol* s = NULL;
+	Symbol* symbol_table = NULL;
 	Method* methods_list = NULL;
 	WordArray* data_img = NULL;
 	WordArray* code_img = NULL;
@@ -236,12 +237,14 @@ bool first_move(char* file_name, Symbol* symbol_table)
 			{
 				error_flag = true;
 			}
-
 		}
 
 		fix_symbol_table(symbol_table, ic); /* add the IC to the address of data symbols */
-		if (error_flag == false)
-			print_symbols(symbol_table);
 	}
-	return (!error_flag);
+
+	if (!error_flag)
+		return second_move(inputf, symbol_table);
+
+	printf("error in first move\n");
+	return false;
 }
