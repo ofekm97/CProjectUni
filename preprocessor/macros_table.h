@@ -1,4 +1,6 @@
+#ifndef HELPERS
 #include "../helpers/helpers.h"
+#endif
 
 typedef struct Macro{
 

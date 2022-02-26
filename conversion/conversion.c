@@ -1,28 +1,30 @@
 #include "conversion.h"
 
-bool get_number_from_data_command(char* str, int* value) 
+bool get_number_from_data_command(char *str, int *value)
 {
 	int i = 0;
 	int amount = sscanf(str, "%d", value);
 
 	if (amount == 0)
-  	{
-        	return false;
-    	}
+	{
+		return false;
+	}
 
-	for (; isspace(str[i]) != 0 ; i++);
+	for (; isspace(str[i]) != 0; i++)
+		;
 
 	if (str[i] == '-')
 		i++;
 
-	for (; '0' <= str[i] && str[i] <= '9' ; i++);
+	for (; '0' <= str[i] && str[i] <= '9'; i++)
+		;
 
 	for (; str[i] != ',' && str[i] != '\0'; i++)
 	{
 		if (isspace(str[i]) == 0)
 			return false;
 	}
-	
+
 	return true;
 }
 
@@ -40,21 +42,21 @@ int quot_marks_counter(char *line)
 	return counter;
 }
 
-int conv_method(char* line, char* method, bool is_label_first, Method* methods_list, int line_number, WordsList *words_list)
+int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list)
 {
-	char orig_op[MAX_LINE_LENGTH+1], dest_op[MAX_LINE_LENGTH+1];
+	char orig_op[MAX_LINE_LENGTH + 1], dest_op[MAX_LINE_LENGTH + 1];
 	Addressing_Methods orig_addressing_method = -1;
 	Addressing_Methods dest_addressing_method = -1;
-	Method* cur_method;
+	Method *cur_method;
 
 	if (split_operands(line, is_label_first, orig_op, dest_op, line_number) == false) /* operands format error */
 		return -1;
 
-	strcpy(orig_op,trim(orig_op)); /* clean whitespaces */
-	strcpy(dest_op,trim(dest_op));
+	strcpy(orig_op, trim(orig_op)); /* clean whitespaces */
+	strcpy(dest_op, trim(dest_op));
 
 	cur_method = methods_list + method_index(methods_list, method);
-	
+
 	if (!check_operands_number(cur_method, orig_op, dest_op))
 	{
 		printf("Line %d- Error: Number of operands does not match the method type\n", line_number);
@@ -75,49 +77,50 @@ int conv_method(char* line, char* method, bool is_label_first, Method* methods_l
 	return 1;
 }
 
-int conv_command(char* line, int command_kind, int line_number, WordsList *words_list)
+int conv_command(char *line, int command_kind, int line_number, WordsList *words_list)
 {
-	int i = 0, current_value = 0, words_num = 0;
+	int i = 0, data_value = 0, words_num = 0;
 
 	if (command_kind == DATA_COMMAND)
 	{
-		for (; line[i] != '.'; i++);
+		for (; line[i] != '.'; i++)
+			;
 		i += 4;
 		while (line[i])
 		{
 			i++;
-			for (; isspace(line[i]) != 0; i++); /* skip spaces before the number */
+			for (; isspace(line[i]) != 0; i++)
+				; /* skip spaces before the number */
 
-		while (line[i] != '\0')
-		{
-			if (get_number_from_data_command(line + i, &data_value) == false)
+			while (line[i] != '\0')
+			{
+				if (get_number_from_data_command(line + i, &data_value) == false)
+				{
+					printf("Line %d- Error: Data format is illegal\n", line_number);
+					return -1;
+				}
+
+				/* a word can hold integers between -2047 to 2048 (16 bits) */
+				if (data_value < MIN_INTEGER || MAX_INTEGER < data_value)
+				{
+					printf("Line %d- Error: Integer is too large\n", line_number);
+					return -1;
+				}
+
+				for (; line[i] != ',' && line[i] != '\0'; i++)
+					;
+				i++;
+
+				if (create_data_word(words_list, true, false, false, data_value))
+					words_num++;
+			}
+
+			if (line[i - 1] == ',') /* comma after the last operand */
 			{
 				printf("Line %d- Error: Data format is illegal\n", line_number);
 				return -1;
 			}
-
-			/* a word can hold integers between -2047 to 2048 (16 bits) */
-			if (data_value < MIN_INTEGER || MAX_INTEGER < data_value)
-			{
-				printf("Line %d- Error: Integer is too large\n", line_number);
-				return -1;
-			}
-			
-			for (; line[i] != ',' && line[i] != '\0'; i++);
-			i++;
-
-			if (create_data_word(words_list, true, false, false, data_value))
-				words_num++;
 		}
-
-		
-		if (line[i - 1] == ',') /* comma after the last operand */
-		{
-			printf("Line %d- Error: Data format is illegal\n", line_number);
-			return -1;
-		}
-
-		return words_num;
 	}
 
 	if (command_kind == STRING_COMMAND) /* string */
@@ -128,7 +131,8 @@ int conv_command(char* line, int command_kind, int line_number, WordsList *words
 			return -1;
 		}
 
-		for (; line[i] != '"'; i++);
+		for (; line[i] != '"'; i++)
+			;
 		for (i++; line[i] != '"'; i++)
 		{
 			if (create_data_word(words_list, true, false, false, (int)(line[i])))

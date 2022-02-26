@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#define HELPERS
+
 #define BASE_ADDRESS     (100)
 #define MAX_LINE_LENGTH (80)
 #define MAX_LABEL_LENGTH (31)

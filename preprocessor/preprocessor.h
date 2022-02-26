@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include "macros_table.h"
 #ifndef HELPERS
-	#define HELPERS
 	#include "../helpers/helpers.h"
 #endif
+
+#define PREPROCESSOR
 
 void span_macros(char* fileName);
 

@@ -3,7 +3,11 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
+#ifndef HELPERS
 #include "../helpers/helpers.h"
+#endif
+
+#define METHODS
 
 #define AMOUNT_OF_METHODS (16)
 #define MAX_LINE_LENGTH (80)

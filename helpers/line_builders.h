@@ -1,4 +1,8 @@
+#ifndef HELPERS
 #include "helpers.h"
+#endif
+
+#define LINE_BUILDER
 
 #define ALL_OPCODE_BITS_ON (65535)
 #define A_LOCATION (18)

@@ -45,7 +45,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table)
 				break;
 
 			default: /* method sentence */
-
+				break;
 				
 		}
 
