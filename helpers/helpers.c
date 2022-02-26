@@ -40,7 +40,7 @@ bool get_reg_number(char *reg_name, int* ret_value, int line_number)
         return false;
     }
 	
-    if (get_number_from_string(reg_name+1, ret_value))
+    if (get_number_from_string(reg_name+1, ret_value, true))
     {
         if (*ret_value <= 15 && 0 <= *ret_value)
             return true;
@@ -153,12 +153,12 @@ int is_command(char* line, char* label_name, int line_number)
 
 	if (strncmp(&line[i + 1], "data ", 5) == 0)
 	{
-		return 1;
+		return DATA_COMMAND;
 	}
 
 	if (strncmp(&line[i + 1], "string ", 7) == 0)
 	{
-		return 2;
+		return STRING_COMMAND;
 	}
 
 	if (strncmp(&line[i + 1], "extern ", 7) == 0)
@@ -185,7 +185,7 @@ int is_command(char* line, char* label_name, int line_number)
 		
 		if (isupper(label_name[0]) || islower(label_name[0]))
 		{
-			return 3;
+			return EXTERN_COMMAND;
 		}
 
 		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
@@ -216,7 +216,7 @@ int is_command(char* line, char* label_name, int line_number)
 		
 		if (isupper(label_name[0]) || islower(label_name[0]))
 		{
-			return 4;
+			return ENTRY_COMMAND;
 		}
 
 		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
@@ -421,13 +421,12 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 		return false;
 }
 
-bool get_number_from_string(char* str, signed int* value) {
+bool get_number_from_string(char* str, signed int* value, bool expect_comma) {
 	char temp;
 	int amount = sscanf(str, "%d%c", value, &temp);
-	if (amount == 1)
+	if (amount == 1 || (amount == 2 && (isspace(temp) || (expect_comma && temp == ','))))
     {
         return true;
     }
 	return false;
 }
-

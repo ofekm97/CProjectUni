@@ -9,6 +9,10 @@
 #define MAX_LABEL_LENGTH (31)
 #define MAX_MACRO_NAME_LENGTH (31)
 
+#define DATA_COMMAND (1)
+#define STRING_COMMAND (2)
+#define EXTERN_COMMAND (3)
+#define ENTRY_COMMAND (4)
 
 bool check_lines_size(FILE* file, int max);
 
@@ -38,4 +42,4 @@ bool check_operand(char* operand, int line_number);
 
 bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_op, int line_number);
 
-bool get_number_from_string(char* str, signed int* value);
+bool get_number_from_string(char* str, signed int* value, bool expect_comma);

@@ -26,7 +26,7 @@ bool get_number_from_data_command(char* str, int* value)
 	return true;
 }
 
-int quot_marks_counter(char* line)
+int quot_marks_counter(char *line)
 {
 	int i = 0;
 	int counter = 0;
@@ -40,7 +40,7 @@ int quot_marks_counter(char* line)
 	return counter;
 }
 
-int conv_method(char* line, char* method, bool is_label_first, Method* methods_list, int line_number)
+int conv_method(char* line, char* method, bool is_label_first, Method* methods_list, int line_number, WordsList *words_list)
 {
 	char orig_op[MAX_LINE_LENGTH+1], dest_op[MAX_LINE_LENGTH+1];
 	Addressing_Methods orig_addressing_method = -1;
@@ -75,17 +75,18 @@ int conv_method(char* line, char* method, bool is_label_first, Method* methods_l
 	return 1;
 }
 
-int conv_command(char* line,int command_kind, int line_number)
+int conv_command(char* line, int command_kind, int line_number, WordsList *words_list)
 {
-	int i = 0;
-	int words_num = 0;
-	int data_value = 0;
+	int i = 0, current_value = 0, words_num = 0;
 
-	if (command_kind == 1) /* data */
+	if (command_kind == DATA_COMMAND)
 	{
 		for (; line[i] != '.'; i++);
-		i += 5;
-		for (; isspace(line[i]) != 0; i++);
+		i += 4;
+		while (line[i])
+		{
+			i++;
+			for (; isspace(line[i]) != 0; i++); /* skip spaces before the number */
 
 		while (line[i] != '\0')
 		{
@@ -105,9 +106,8 @@ int conv_command(char* line,int command_kind, int line_number)
 			for (; line[i] != ',' && line[i] != '\0'; i++);
 			i++;
 
-			/* push data_value */
-
-			words_num++;
+			if (create_data_word(words_list, true, false, false, data_value))
+				words_num++;
 		}
 
 		
@@ -120,7 +120,7 @@ int conv_command(char* line,int command_kind, int line_number)
 		return words_num;
 	}
 
-	if (command_kind == 2) /* string */
+	if (command_kind == STRING_COMMAND) /* string */
 	{
 		if (quot_marks_counter(line) != 2)
 		{
@@ -131,11 +131,15 @@ int conv_command(char* line,int command_kind, int line_number)
 		for (; line[i] != '"'; i++);
 		for (i++; line[i] != '"'; i++)
 		{
-			/* push word- Ascii(line[i]) */
+			if (create_data_word(words_list, true, false, false, (int)(line[i])))
+			{
+				words_num++;
+			}
+		}
+		if (create_data_word(words_list, true, false, false, (int)('\0')))
+		{
 			words_num++;
 		}
-			/* push word- '\0' */
-			words_num++;
 	}
 
 	return words_num;

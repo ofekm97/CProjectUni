@@ -60,9 +60,10 @@ int method_index(Method *command_list, char *word)
     Method current;
     char last_char;
     int i = 0;
-	
-	if (command_list == NULL) {
-	        printf("method list is null, returning -1");
+
+    if (command_list == NULL)
+    {
+        printf("method list is null, returning -1");
         return -1;
     }
     for (; i < AMOUNT_OF_METHODS; i++)
@@ -177,7 +178,7 @@ bool get_addresing_method(char *operand, Addressing_Methods *addressing_method, 
 
     if (*operand == '#')
     {
-        if (get_number_from_string(operand + 1, (signed int *)addressing_method))
+        if (get_number_from_string(operand + 1, (signed int *)addressing_method, true))
         {
             *addressing_method = IMMEDIATE;
             return true;
@@ -200,7 +201,7 @@ bool check_operands_number(Method *method, char origin_operand[MAX_LINE_LENGTH+1
         	noErrors &= (bool)(method->src_addressing_method == -1);
 	else
 		noErrors &= (bool)(method->src_addressing_method != -1);
-	
+
 
 	if (is_empty(dest_operand))
 	        noErrors &= (bool)(method->dest_addressing_method == -1);
