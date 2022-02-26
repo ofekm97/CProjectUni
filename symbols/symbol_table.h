@@ -1,7 +1,8 @@
 #ifndef LINE_BUILDER
-	#define LINE_BUILDER
 	#include "../helpers/line_builders.h"
 #endif
+
+#define SYMBOL
 
 #define MAX_LABEL_LENGTH (31)
 #define DONT_KNOW (0)

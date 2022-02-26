@@ -81,45 +81,47 @@ int method_index(Method *command_list, char *word)
     return -1;
 }
 
-bool is_legal_label(Method *command_list, char *label)
+bool is_legal_label(Method* command_list, char* label, int line_number)
 {
-    int i = 0;
+	int i = 0;
 
-    while (label[i] != '\0')
-    {
-        if (isalnum(label[i]) == 0)
-        {
-            printf("Line %d- Error: Label name has only alpha-numeric characters\n", 0);
-            return false;
-        }
+	while(label[i] != '\0')
+	{
+		if (isalnum(label[i]) == 0)
+		{
+			printf("Line %d- Error: Label name has only alpha-numeric characters\n", line_number);
+			return false;
+		}
 
-        i++;
-    }
+		i++;
+	}
 
-    if (method_index(command_list, label) > 0)
-    {
-        printf("Line %d- Error: Label name cannot be the same as method name\n", 0);
-        return false;
-    }
+	if (method_index(command_list, label) > 0)
+	{
+		printf("Line %d- Error: Label name cannot be the same as method name\n", line_number);
+		return false;
+	}
 
-    if (get_reg_number(label, &i))
-    {
-        printf("Line %d- Error: Label name cannot be the same as register name\n", 0);
-        return false;
-    }
+	if (get_reg_number(label, &i, line_number))
+	{
+		printf("Line %d- Error: Label name cannot be the same as register name\n", line_number);
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 bool is_valid_addressing(Method *method, Addressing_Methods operand_type, bool is_source)
 {
     int bit_wise_addressing = 1 << operand_type;
+
     if (operand_type == NO_OPERAND)
-        return true;
+	return true;
+
     return (bool)(is_source ? (method->src_addressing_method & bit_wise_addressing) : (method->dest_addressing_method & bit_wise_addressing));
 }
 
-bool get_index_or_direct_addressing(char *operand, Addressing_Methods *addressing_method)
+bool get_index_or_direct_addressing(char *operand, Addressing_Methods *addressing_method, int line_number)
 {
     int braces_index = 0, reg_number = -1;
     char reg[4];
@@ -133,12 +135,12 @@ bool get_index_or_direct_addressing(char *operand, Addressing_Methods *addressin
         braces_index++;
     }
 
-    if (!(*temp))
+    if ((*temp))
     {
         memcpy(reg, temp + 1, 3);
         reg[3] = '\0';
 
-        if (get_reg_number(reg, &reg_number))
+        if (get_reg_number(reg, &reg_number, line_number))
         {
             if (10 <= reg_number || reg_number <= 15)
             {
@@ -158,10 +160,17 @@ bool get_index_or_direct_addressing(char *operand, Addressing_Methods *addressin
     return true;
 }
 
-bool get_addresing_method(char *operand, Addressing_Methods *addressing_method)
+bool get_addresing_method(char *operand, Addressing_Methods *addressing_method, int line_number)
 {
     signed int reg_number = -1;
-    if (get_reg_number(operand, (signed int *)&reg_number))
+
+    if (is_empty(operand))
+    {
+	*addressing_method = NO_OPERAND;
+	 return true;
+    }
+
+    if (get_reg_number(operand, (signed int *)&reg_number, line_number))
     {
         *addressing_method = REG_DIRECT;
         return true;
@@ -171,12 +180,12 @@ bool get_addresing_method(char *operand, Addressing_Methods *addressing_method)
     {
         if (get_number_from_string(operand + 1, (signed int *)addressing_method, true))
         {
-            addressing_method = IMMEDIATE;
+            *addressing_method = IMMEDIATE;
             return true;
         }
     }
 
-    if (get_index_or_direct_addressing(operand, addressing_method))
+    if (get_index_or_direct_addressing(operand, addressing_method, line_number))
     {
         return true;
     }

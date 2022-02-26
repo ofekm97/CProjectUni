@@ -3,7 +3,11 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
+#ifndef HELPERS
 #include "../helpers/helpers.h"
+#endif
+
+#define METHODS
 
 #define AMOUNT_OF_METHODS (16)
 #define MAX_LINE_LENGTH (80)
@@ -18,6 +22,7 @@ typedef struct Method
     int src_addressing_method;
     int dest_addressing_method;
 } Method;
+
 
 typedef enum Addressing_Methods
 {
@@ -34,12 +39,12 @@ void destroy_methods_list(Method *methods_list);
 
 int method_index(Method *methods_list, char *word);
 
-bool is_legal_label(Method* command_list, char* label);
+bool is_legal_label(Method* command_list, char* label, int line_number);
 
 bool is_valid_addressing(Method *method, Addressing_Methods operand_type, bool is_source);
 
-bool get_index_or_direct_addressing(char *operand, Addressing_Methods *addressing_method);
+bool get_index_or_direct_addressing(char *operand, Addressing_Methods *addressing_method, int line_number);
 
-bool get_addresing_method(char *operand, Addressing_Methods *addressing_method);
+bool get_addresing_method(char *operand, Addressing_Methods *addressing_method, int line_number);
 
 bool check_operands_number(Method *method, char origin_operand[MAX_LINE_LENGTH+1], char dest_operand[MAX_LINE_LENGTH+1]);

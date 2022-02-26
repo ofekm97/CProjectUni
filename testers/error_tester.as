@@ -2,21 +2,26 @@
 .entry LIST
 .extern W
 
-MAIN:		add	r3, LIST
-LOOP:		prn	#48
- 		lea 	STR, r6
+MAIN:		addw	r3, LIST
+MAIN:		prn	#48
+		macro m1
  		  inc r6
 		  mov r3, W
-		sub	r1, r4
+		endm
+ 		lea 	STR
+ 		m1
+		macro m3
+		endm
+		sub	r1, r4,a
  		bne	END
  		cmp	val1, #-6
  		bne	END[r15]
- 		dec	K
+ 		dec	#1
 .entry MAIN
- 		sub	LOOP[r10] ,r14
+ 		sub	LOOP[r16] ,r14
 END: 		stop
-STR:	       .string  "abcd"
-LIST: 	       .data    6, -9
+ST-R:	       .string  "abcd"
+1LIST: 	       .data    6, -9
  	       .data    -100
 .entry K
 K:	       .data    31

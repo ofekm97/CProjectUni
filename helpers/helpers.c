@@ -18,7 +18,7 @@ bool check_lines_size(FILE* file, int max)
 
 		if (length > max)
 		{
-			printf("Error: Line %d is longer than %d\n", line_number, max);
+			printf("Line %d- Error: Line is longer than %d\n", line_number, max);
 			fseek(file, 0, SEEK_SET);
 			return false;
 		}
@@ -28,7 +28,7 @@ bool check_lines_size(FILE* file, int max)
 	return true;
 }
 
-bool get_reg_number(char *reg_name, int* ret_value)
+bool get_reg_number(char *reg_name, int* ret_value, int line_number)
 {
     reg_name = trim(reg_name);
     if (reg_name == NULL)
@@ -45,6 +45,8 @@ bool get_reg_number(char *reg_name, int* ret_value)
         if (*ret_value <= 15 && 0 <= *ret_value)
             return true;
     }
+ 
+    printf("Line %d- Error: Register number is not exist\n", line_number);
     return false;
 }
 
@@ -89,7 +91,7 @@ char *trim(char *str)
 
 /* return 1 if there is a label definition in the current line and put the label name in "label_name".
  return 0 if there isn't and return -1 if there is error in label definition */
-int is_label_def(char* line, char* label_name)
+int is_label_def(char* line, char* label_name, int line_number)
 {
 	int i = 0;
 
@@ -108,7 +110,7 @@ int is_label_def(char* line, char* label_name)
 
 	if (i > MAX_LABEL_LENGTH)
 	{
-		printf("Error: label name is too long\n");
+		printf("Line %d- Error: label name is too long\n", line_number);
 		label_name = NULL;
 		return -1;
 	}
@@ -127,7 +129,7 @@ int is_label_def(char* line, char* label_name)
 	
 	else
 	{
-		printf("Error: a label name must begin with an alphabetic character\n");
+		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
 		label_name = NULL;
 		return -1;
 	}
@@ -135,7 +137,7 @@ int is_label_def(char* line, char* label_name)
 
 /* return 1-4 if this is a command sentence, 0 if not and -1 if there is an error in the command name.
    if its external or entry command, put the label name in "label_name" */
-int is_command(char* line, char* label_name)
+int is_command(char* line, char* label_name, int line_number)
 {
 	int i = 0, j = 0;
 	
@@ -171,7 +173,7 @@ int is_command(char* line, char* label_name)
 		{
 			if (j >= MAX_LABEL_LENGTH)
 			{
-				printf("Error: label name is too long\n");
+				printf("Line %d- Error: label name is too long\n", line_number);
 				return -1;
 			}
 
@@ -186,7 +188,7 @@ int is_command(char* line, char* label_name)
 			return EXTERN_COMMAND;
 		}
 
-		printf("Error: a label name must begin with an alphabetic character\n");
+		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
 		return -1;
 	}
 
@@ -202,7 +204,7 @@ int is_command(char* line, char* label_name)
 		{
 			if (j >= MAX_LABEL_LENGTH)
 			{
-				printf("Error: label name is too long\n");
+				printf("Line %d- Error: label name is too long\n", line_number);
 				return -1;
 			}
 
@@ -217,11 +219,11 @@ int is_command(char* line, char* label_name)
 			return ENTRY_COMMAND;
 		}
 
-		printf("Error: a label name must begin with an alphabetic character\n");
+		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
 		return -1;
 	}
 
-	printf("Command name is not exist\n");
+	printf("Line %d- Error: Command name is not exist\n", line_number);
 	return -1;
 }
 
@@ -305,7 +307,7 @@ int commas_counter(char* line)
 	return counter;
 }
 
-bool check_operand(char* operand)
+bool check_operand(char* operand, int line_number)
 {
 	int i = 0;
 
@@ -313,7 +315,7 @@ bool check_operand(char* operand)
 	{
 		if (isspace(operand[i]) != 0)
 		{
-			printf("unvalid operand\n");
+			printf("Line %d- Error: Invalid operand\n", line_number);
 			return false;
 		}
 	}
@@ -321,7 +323,7 @@ bool check_operand(char* operand)
 	return true;
 }
 
-bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_op)
+bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_op, int line_number)
 {
 	int i = 0, j = 0;
 	int commas_num;
@@ -346,7 +348,7 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 	
 	if (line[i] == ',') /* comma before the first operand */
 	{
-		printf("Error: Comma location is illegal\n");
+		printf("Line %d- Error: Comma location is illegal\n", line_number);
 		return false;
 	}
 
@@ -359,14 +361,14 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 	{
 		while (line[i] != '\0')
 		{
-			orig_op[j] = line[i];
+			dest_op[j] = line[i];
 			i++, j++;
 		}
 		
-		orig_op[j] = '\0';
-		orig_op = trim(orig_op);
+		dest_op[j] = '\0';
+		dest_op = trim(dest_op);
 
-		if (check_operand(orig_op) == false)
+		if (check_operand(dest_op, line_number) == false)
 			return false;
 
 		return true;
@@ -385,7 +387,7 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 
 		if (line[i] == '\0') /* comma after the last operand */
 		{
-			printf("Error: Comma location is illegal\n");
+			printf("Line %d- Error: Comma location is illegal\n", line_number);
 			strcpy(orig_op, "");
 			return false;
 		}
@@ -402,7 +404,7 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 		orig_op = trim(orig_op);
 		dest_op = trim(dest_op);
 
-		if (check_operand(orig_op) == false || check_operand(dest_op) == false)
+		if (check_operand(orig_op, line_number) == false || check_operand(dest_op, line_number) == false)
 			return false;
 
 		return true;
@@ -410,12 +412,12 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 
 	if (commas_num == -1)
 	{
-		printf("Error: Two commas in a row\n");
+		printf("Line %d- Error: Two commas in a row\n", line_number);
 		return false;
 	}
 	
 		/* more than 2 operands */
-		printf("Error: Too much operands or commas\n");
+		printf("Line %d- Error: Too much operands or commas\n", line_number);
 		return false;
 }
 
