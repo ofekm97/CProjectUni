@@ -7,8 +7,8 @@ bool first_move(char* file_name)
 	Symbol* symbol_table = NULL;
 	Symbol* s = NULL;
 	Method* methods_list = NULL;
-	WordArray* data_img = NULL;
-	WordArray* code_img = NULL;
+	WordsList* data_img = init_words_list();
+	WordsList* code_img = init_words_list();
 	char line[MAX_LINE_LENGTH+1];
 	char label[MAX_LABEL_LENGTH];
 	char method_name[5];
@@ -66,7 +66,7 @@ bool first_move(char* file_name)
 						if (s == NULL) /* new symbol */
 						{
 							symbol_table = insert_symbol(symbol_table, label, dc, DATA, false);
-							dc += conv_command(line, command_kind, true);
+							dc += conv_command(line, command_kind, true, data_img);
 						}
 
 						else if (s -> attribute != DONT_KNOW) /* symbol is already exist */
@@ -82,7 +82,7 @@ bool first_move(char* file_name)
 							get_base_and_offset(s -> value, &base, &offset);
 							s -> base_add = base;
 							s -> offset = offset;
-							dc += conv_command(line, command_kind, true);
+							dc += conv_command(line, command_kind, true, data_img);
 						}
 
 						break;
@@ -107,7 +107,7 @@ bool first_move(char* file_name)
 							if (s == NULL) /* new symbol */
 							{
 								symbol_table = insert_symbol(symbol_table, label, ic, CODE, false);
-								ic += conv_method(line, method_name, true);
+								ic += conv_method(line, method_name, true, code_img);
 							}
 							
 							else if (s -> attribute != DONT_KNOW) /* symbol is already exist */
@@ -123,7 +123,7 @@ bool first_move(char* file_name)
 								get_base_and_offset(s -> value, &base, &offset);
 								s -> base_add = base;
 								s -> offset = offset;
-								ic += conv_method(line, method_name, true);
+								ic += conv_method(line, method_name, true, code_img);
 							}
 						}
 
@@ -144,15 +144,15 @@ bool first_move(char* file_name)
 						error_flag = true;
 						break;
 
-					case 1:
-						dc += conv_command(line, 1, true);
+					case DATA_COMMAND:
+						dc += conv_command(line, DATA_COMMAND, true, data_img);
 						break;
 
-					case 2:
-						dc += conv_command(line, 2, true);
+					case STRING_COMMAND:
+						dc += conv_command(line, STRING_COMMAND, true, data_img);
 						break;
 
-					case 3:      /* label define as external */
+					case EXTERN_COMMAND:      /* label define as external */
 						if (is_legal_label(methods_list,label) == false) /* check if label name is legal */
 						{	
 							error_flag = true;
@@ -162,7 +162,7 @@ bool first_move(char* file_name)
 						symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
 						break;
 
-					case 4:	     /* label define as entry */	
+					case ENTRY_COMMAND:	     /* label define as entry */	
 						if (is_legal_label(methods_list,label) == false) /* check if label name is legal */
 						{	
 							error_flag = true;
@@ -187,7 +187,7 @@ bool first_move(char* file_name)
 
 						if (method_index(methods_list, method_name) != -1) /* method sentence */
 						{
-							ic += conv_method(line, method_name, false);
+							ic += conv_method(line, method_name, false, code_img);
 						}
 						
 						else
@@ -208,6 +208,7 @@ bool first_move(char* file_name)
 		fix_symbol_table(symbol_table, ic); /* add the IC to the address of data symbols */
 		if (error_flag == false)
 			print_symbols(symbol_table);	
+			print_words_list(data_img);
 	}
 	return (!error_flag);
 }

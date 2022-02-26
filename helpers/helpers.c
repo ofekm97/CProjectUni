@@ -40,7 +40,7 @@ bool get_reg_number(char *reg_name, int* ret_value)
         return false;
     }
 	
-    if (get_number_from_string(reg_name+1, ret_value))
+    if (get_number_from_string(reg_name+1, ret_value, true))
     {
         if (*ret_value <= 15 && 0 <= *ret_value)
             return true;
@@ -151,12 +151,12 @@ int is_command(char* line, char* label_name)
 
 	if (strncmp(&line[i + 1], "data ", 5) == 0)
 	{
-		return 1;
+		return DATA_COMMAND;
 	}
 
 	if (strncmp(&line[i + 1], "string ", 7) == 0)
 	{
-		return 2;
+		return STRING_COMMAND;
 	}
 
 	if (strncmp(&line[i + 1], "extern ", 7) == 0)
@@ -183,7 +183,7 @@ int is_command(char* line, char* label_name)
 		
 		if (isupper(label_name[0]) || islower(label_name[0]))
 		{
-			return 3;
+			return EXTERN_COMMAND;
 		}
 
 		printf("Error: a label name must begin with an alphabetic character\n");
@@ -214,7 +214,7 @@ int is_command(char* line, char* label_name)
 		
 		if (isupper(label_name[0]) || islower(label_name[0]))
 		{
-			return 4;
+			return ENTRY_COMMAND;
 		}
 
 		printf("Error: a label name must begin with an alphabetic character\n");
@@ -281,36 +281,6 @@ void get_method_name(char* line, bool is_label_first, char* method_name)
 		method_name = NULL;
 		return;
 	}
-}
-
-bool is_legal_label(Method* command_list, char* label)
-{
-	int i = 0;
-
-	while(label[i] != '\0')
-	{
-		if (isalnum(label[i]) == 0)
-		{
-			printf("Error: Label name has only alpha-numeric characters\n");
-			return false;
-		}
-
-		i++;
-	}
-
-	if (method_index(command_list, label) > 0)
-	{
-		printf("Error: Label name cannot be the same as method name\n");
-		return false;
-	}
-
-	if (get_reg_number(label, &i))
-	{
-		printf("Error: Label name cannot be the same as register name\n");
-		return false;
-	}
-
-	return true;
 }
 
 int commas_counter(char* line)
@@ -449,21 +419,10 @@ bool split_operands(char* line, bool is_label_first, char* orig_op, char* dest_o
 		return false;
 }
 
-bool get_number_from_string(char* str, signed int* value) {
+bool get_number_from_string(char* str, signed int* value, bool expect_comma) {
 	char temp;
 	int amount = sscanf(str, "%d%c", value, &temp);
-	if (amount == 1)
-    {
-        return true;
-    }
-	return false;
-}
-
-
-bool get_number_from_string(char* str, signed int* value) {
-	char temp;
-	int amount = sscanf(str, "%d%c", value, &temp);
-	if (amount == 1)
+	if (amount == 1 || (amount == 2 && (isspace(temp) || (expect_comma && temp == ','))))
     {
         return true;
     }

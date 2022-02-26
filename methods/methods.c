@@ -60,9 +60,10 @@ int method_index(Method *command_list, char *word)
     Method current;
     char last_char;
     int i = 0;
-	
-	if (command_list == NULL) {
-	        printf("method list is null, returning -1");
+
+    if (command_list == NULL)
+    {
+        printf("method list is null, returning -1");
         return -1;
     }
     for (; i < AMOUNT_OF_METHODS; i++)
@@ -80,9 +81,41 @@ int method_index(Method *command_list, char *word)
     return -1;
 }
 
+bool is_legal_label(Method *command_list, char *label)
+{
+    int i = 0;
+
+    while (label[i] != '\0')
+    {
+        if (isalnum(label[i]) == 0)
+        {
+            printf("Line %d- Error: Label name has only alpha-numeric characters\n", 0);
+            return false;
+        }
+
+        i++;
+    }
+
+    if (method_index(command_list, label) > 0)
+    {
+        printf("Line %d- Error: Label name cannot be the same as method name\n", 0);
+        return false;
+    }
+
+    if (get_reg_number(label, &i))
+    {
+        printf("Line %d- Error: Label name cannot be the same as register name\n", 0);
+        return false;
+    }
+
+    return true;
+}
+
 bool is_valid_addressing(Method *method, Addressing_Methods operand_type, bool is_source)
 {
     int bit_wise_addressing = 1 << operand_type;
+    if (operand_type == NO_OPERAND)
+        return true;
     return (bool)(is_source ? (method->src_addressing_method & bit_wise_addressing) : (method->dest_addressing_method & bit_wise_addressing));
 }
 
@@ -136,7 +169,7 @@ bool get_addresing_method(char *operand, Addressing_Methods *addressing_method)
 
     if (*operand == '#')
     {
-        if (get_number_from_string(operand + 1, (signed int *)addressing_method))
+        if (get_number_from_string(operand + 1, (signed int *)addressing_method, true))
         {
             addressing_method = IMMEDIATE;
             return true;
@@ -151,29 +184,20 @@ bool get_addresing_method(char *operand, Addressing_Methods *addressing_method)
     return false;
 }
 
-bool check_addressing_method(Method *method, char origin_operand[MAX_LINE_LENGTH+1], char dest_operand[MAX_LINE_LENGTH+1])
+bool check_operands_number(Method *method, char origin_operand[MAX_LINE_LENGTH+1], char dest_operand[MAX_LINE_LENGTH+1])
 {
-    int method_as_bit = 0;
-    Addressing_Methods current_addressing_method;
     bool noErrors = true;
 
-    if (origin_operand == NULL || is_empty(origin_operand)) {
-        noErrors &= (bool)(method->src_addressing_method == -1);
-    } else {
-        if(get_addresing_method(origin_operand, &current_addressing_method)) {
-            method_as_bit = 1 << current_addressing_method;
-            noErrors &= (bool)(current_addressing_method & method_as_bit);
-        }
-    }
+	if (is_empty(origin_operand)) 
+        	noErrors &= (bool)(method->src_addressing_method == -1);
+	else
+		noErrors &= (bool)(method->src_addressing_method != -1);
 
-    if (dest_operand == NULL || is_empty(dest_operand)) {
-        noErrors &= (bool)(method->dest_addressing_method == -1);
-    } else {
-        if(get_addresing_method(dest_operand, &current_addressing_method)) {
-            method_as_bit = 1 << current_addressing_method;
-            noErrors &= (bool)(current_addressing_method & method_as_bit);
-        }
-    }
+
+	if (is_empty(dest_operand))
+	        noErrors &= (bool)(method->dest_addressing_method == -1);
+	else
+		noErrors &= (bool)(method->dest_addressing_method != -1);
 
     return noErrors;
 }
