@@ -79,12 +79,13 @@ int get_base_and_offset(int address, int *base, int *offset)
     return 1;
 }
 
-bool create_data_word(WordsList* words_list, bool A, bool R, bool E, int data)
+bool create_data_word(WordsList* words_list, bool A, bool R, bool E, int data, bool expecting_data)
 {
     Word *new_word = (Word *)malloc(sizeof(Word));
     if (new_word != NULL)
     {
         new_word->is_func_word = false;
+        new_word->expecting_data = expecting_data;
         new_word->A = A;
         new_word->R = R;
         new_word->E = E;
@@ -100,12 +101,13 @@ bool create_data_word(WordsList* words_list, bool A, bool R, bool E, int data)
     return true;
 }
 
-Word *create_func_word(WordsList* words_list, bool A, bool R, bool E, short func, short orig_reg, short orig_addressing, short dest_reg, short dest_addressing)
+bool create_func_word(WordsList* words_list, bool A, bool R, bool E, short func, short orig_reg, short orig_addressing, short dest_reg, short dest_addressing, bool expecting_data)
 {
     Word *new_word = (Word *)malloc(sizeof(Word));
     if (new_word != NULL)
     {
         new_word->is_func_word = true;
+        new_word->expecting_data = expecting_data;
         new_word->A = A;
         new_word->R = R;
         new_word->E = E;
@@ -119,10 +121,10 @@ Word *create_func_word(WordsList* words_list, bool A, bool R, bool E, short func
     else
     {
         /* should print an error? */
-        return NULL;
+        return false;
     }
     push_to_words_list(words_list, new_word);
-    return new_word;
+    return true;
 }
 
 WordsList *init_words_list()
@@ -184,10 +186,10 @@ void print_word(Word* current, int index) {
 void print_words_list(WordsList *words_list) {
     int i = 1;
     Word *current = words_list->words;
-    printf("\n\n***** this is for debug, should not be in final code ***\n");
-    while(current) {
+    printf("\n\n***** this is for debug, should not be in final code *** %d\n", words_list->size);
+    /*while(current) {
         print_word(current, i);
         current = current->next;
         i++;
-    }
+    }*/ 
 }

@@ -35,6 +35,7 @@
 typedef struct Word
 {
     bool is_func_word;
+    bool expecting_data;
     bool A;
     bool R;
     bool E;
@@ -65,8 +66,8 @@ void push_to_words_list(WordsList *words_list, Word *new_words);
 
 void destroy_words_list(WordsList* words_list);
 
-bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data);
+bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, bool expecting_data);
 
-Word *create_func_word(WordsList *words_list, bool A, bool R, bool E, short func, short orig_reg, short orig_addressing, short dest_reg, short dest_addressing);
+bool create_func_word(WordsList *words_list, bool A, bool R, bool E, short func, short orig_reg, short orig_addressing, short dest_reg, short dest_addressing, bool expecting_data);
 
 void print_words_list(WordsList *words_list);

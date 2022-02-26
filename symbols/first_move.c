@@ -191,8 +191,9 @@ bool first_move(char* file_name)
 
 		fix_symbol_table(symbol_table, ic); /* add the IC to the address of data symbols */
 		if (error_flag == false) /* for debug */
-			print_symbols(symbol_table);	
 			print_words_list(data_img);
+			print_words_list(code_img);
+			printf("dc: %d, ic: %d\n", dc, ic);
 	}
 
 	if (!error_flag)
