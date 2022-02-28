@@ -1,9 +1,35 @@
 #include "second_move.h"
 
-bool second_move(FILE* inputf, Symbol* symbol_table)
+bool write_to_entries_file(Symbol* symbol, char* file_name, bool is_first_entry)
+{
+	FILE* entries_file = NULL;
+
+	if (is_first_entry)
+	{
+		strcat(file_name, ".ent");
+		entries_file = fopen(file_name, "w");
+	}
+
+	else
+		entries_file = fopen(file_name, "a");
+
+	if (entries_file == NULL)
+	{
+		printf("Error: cannot open file: %s\n", file_name);
+		return false;
+	}
+	
+	fprintf(entries_file, "%s, %d, %d\n", symbol -> label_name, symbol -> base_add, symbol -> offset);
+
+	fclose(entries_file);
+	return true;
+}
+
+bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name)
 {
 	Symbol* s;
 	bool error_flag = false;
+	bool is_first_entry = true;
 	char line[MAX_LINE_LENGTH+1];
 	char label_name[MAX_LABEL_LENGTH];
 	char c;
@@ -34,6 +60,8 @@ bool second_move(FILE* inputf, Symbol* symbol_table)
 				if (s != NULL) /* symbol exist */
 				{
 					s -> entry = true;
+					write_to_entries_file(s, file_name, is_first_entry);
+					is_first_entry = false;
 				}
 					
 				else 

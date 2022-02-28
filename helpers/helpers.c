@@ -144,24 +144,19 @@ int is_command(char* line, char* label_name, int line_number)
 	while (line[i] != '.')
 	{
 		if (line[i] == '\0')
-		{
 			return 0;
-		}
-		
 		i++;
 	}
 
-	if (strncmp(&line[i + 1], "data ", 5) == 0)
-	{
+	if (strncmp(&line[i + 1], "data", 4) == 0 && isspace(line[i + 5]) != 0)
 		return DATA_COMMAND;
-	}
+	
 
-	if (strncmp(&line[i + 1], "string ", 7) == 0)
-	{
+	if (strncmp(&line[i + 1], "string", 6) == 0 && isspace(line[i + 7]) != 0)
 		return STRING_COMMAND;
-	}
+	
 
-	if (strncmp(&line[i + 1], "extern ", 7) == 0)
+	if (strncmp(&line[i + 1], "extern", 6) == 0 && isspace(line[i + 7]) != 0)
 	{
 		i += 8;
 		while (isspace(line[i]))
@@ -184,15 +179,13 @@ int is_command(char* line, char* label_name, int line_number)
 		label_name[j] = '\0';
 		
 		if (isupper(label_name[0]) || islower(label_name[0]))
-		{
 			return EXTERN_COMMAND;
-		}
 
 		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
 		return -1;
 	}
 
-	if (strncmp(&line[i + 1], "entry ", 6) == 0)
+	if (strncmp(&line[i + 1], "entry", 5) == 0 && isspace(line[i + 6]) != 0)
 	{
 		i += 7;
 		while (isspace(line[i]))
@@ -215,9 +208,7 @@ int is_command(char* line, char* label_name, int line_number)
 		label_name[j] = '\0';
 		
 		if (isupper(label_name[0]) || islower(label_name[0]))
-		{
 			return ENTRY_COMMAND;
-		}
 
 		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
 		return -1;
@@ -248,6 +239,19 @@ char* cut_as(char* str)
 	while (str[i] != '\0')
 	{
 		if (strcmp(&str[i], ".as") == 0)
+			str[i] = '\0';
+		i++;
+	}
+	return str;
+}
+
+char* cut_am(char* str)
+{
+	int i = 0;
+
+	while (str[i] != '\0')
+	{
+		if (strcmp(&str[i], ".am") == 0)
 			str[i] = '\0';
 		i++;
 	}

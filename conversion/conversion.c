@@ -28,10 +28,13 @@ bool get_number_from_data_command(char *str, int *value)
 	return true;
 }
 
-int quot_marks_counter(char *line)
+bool check_string_format(char *line)
 {
 	int i = 0;
 	int counter = 0;
+
+	if (line[0] != '"')
+		return false;
 
 	while (line[i] != '\0')
 	{
@@ -39,7 +42,14 @@ int quot_marks_counter(char *line)
 			counter++;
 		i++;
 	}
-	return counter;
+
+	if (line[i - 1] != '"')
+		return false;
+
+	if (counter != 2)
+		return false;
+
+	return true;
 }
 
 int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list)
@@ -125,21 +135,25 @@ int conv_command(char *line, int command_kind, int line_number, WordsList *words
 
 	if (command_kind == STRING_COMMAND) /* string */
 	{
-		if (quot_marks_counter(line) != 2)
+		for (; line[i] != '.'; i++)
+			;
+		i += 7;
+		line = trim(line + i);
+
+		if (check_string_format(line) == false)
 		{
 			printf("Line %d- Error: String format is illegal\n", line_number);
 			return -1;
 		}
 
-		for (; line[i] != '"'; i++)
-			;
-		for (i++; line[i] != '"'; i++)
+		for (i = 1; line[i] != '"'; i++)
 		{
 			if (create_data_word(words_list, true, false, false, (int)(line[i])))
 			{
 				words_num++;
 			}
 		}
+
 		if (create_data_word(words_list, true, false, false, (int)('\0')))
 		{
 			words_num++;

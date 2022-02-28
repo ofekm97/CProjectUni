@@ -36,6 +36,8 @@ bool is_empty(char* line);
 
 char* cut_as(char* str);
 
+char* cut_am(char* str);
+
 void get_method_name(char* line, bool is_label_first, char* method_name);
 
 int commas_counter(char* line);

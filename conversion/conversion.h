@@ -13,7 +13,7 @@
 
 bool get_number_from_data_command(char *str, int *value);
 
-int quot_marks_counter(char *line);
+bool check_string_format(char *line);
 
 int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list);
 
