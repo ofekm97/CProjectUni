@@ -47,6 +47,9 @@ bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToRetu
 	bool noErrors = true;
 	returnTo = info->return_to_me ? returnTo : NULL;
 
+	if(info->addressing_method == NO_OPERAND)
+		return true;
+
 	/* REG_DIRECT is the only one without additional words */
 	if (info->addressing_method == REG_DIRECT)
 	{
