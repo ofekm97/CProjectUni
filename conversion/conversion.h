@@ -15,6 +15,6 @@ bool get_number_from_data_command(char *str, int *value);
 
 bool check_string_format(char *line);
 
-int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list);
+int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list, WordsToReturnToList *returnTo);
 
 int conv_command(char *line, int command_kind, int line_number, WordsList *words_list);

@@ -9,6 +9,7 @@ bool first_move(char* file_name)
 	Method* methods_list = NULL;
 	WordsList* data_img = init_words_list();
 	WordsList* code_img = init_words_list();
+	WordsToReturnToList *returnTo = init_words_to_return_list();
 	char line[MAX_LINE_LENGTH+1];
 	char label[MAX_LABEL_LENGTH];
 	char method_name[5];
@@ -103,7 +104,7 @@ bool first_move(char* file_name)
 							{
 								symbol_table = insert_symbol(symbol_table, label, ic, CODE, false);
 
-								new_words_num = conv_method(line, method_name, true, methods_list, line_number, code_img);
+								new_words_num = conv_method(line, method_name, true, methods_list, line_number, code_img, returnTo);
 								if (new_words_num < 0)
 									error_flag = true;
 
@@ -169,7 +170,7 @@ bool first_move(char* file_name)
 
 						if (method_index(methods_list, method_name) != -1) /* method sentence */
 						{
-							new_words_num = conv_method(line, method_name, false, methods_list, line_number, code_img);
+							new_words_num = conv_method(line, method_name, false, methods_list, line_number, code_img, returnTo);
 							if (new_words_num < 0)
 								error_flag = true;
 
@@ -192,8 +193,12 @@ bool first_move(char* file_name)
 
 		fix_symbol_table(symbol_table, ic); /* add the IC to the address of data symbols */
 		if (error_flag == false) /* for debug */
-			print_symbols(symbol_table);	
+			print_return_to_words_list(returnTo);
+			/*
 			print_words_list(data_img);
+			print_words_list(code_img);
+			*/
+			printf("dc: %d, ic: %d\n", dc, ic);
 	}
 
 	if (!error_flag)
