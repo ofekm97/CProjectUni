@@ -42,15 +42,68 @@ int quot_marks_counter(char *line)
 	return counter;
 }
 
-int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list)
+bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToReturnToList *returnTo, int line_number, int *words_added_count)
+{
+	bool noErrors = true;
+	returnTo = info->return_to_me ? returnTo : NULL;
+
+	/* REG_DIRECT is the only one without additional words */
+	if (info->addressing_method == REG_DIRECT)
+	{
+		return noErrors;
+	}
+	/* this needs to be changed accoding to is external and so.. */
+	noErrors &= create_data_word(words_list, true, false, false, info->additional_first_word, line_number, returnTo);
+	(*words_added_count)++;
+	/* REG_DIRECT is the only one with one additional word */
+	if (info->addressing_method == IMMEDIATE)
+	{
+		return noErrors;
+	}
+	noErrors &= create_data_word(words_list, true, false, false, info->additional_second_word, line_number, NULL);
+	(*words_added_count)++;
+	return noErrors;
+}
+
+bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo *dest_info, WordsList *words_list, WordsToReturnToList *returnTo, int line_number, int *words_added_count)
+{
+	bool noErrors = true;
+	/* add the first word with the opcode */
+	noErrors &= create_data_word(words_list, true, false, false, method->opcode, line_number, NULL);
+
+	if (!noErrors)
+		return noErrors;
+
+	(*words_added_count)++;
+	/* group 3 has only 1 word (opcode) */
+	if (method->group_num == 3)
+	{
+		return noErrors;
+	}
+	/* add the second word with the func and regs and addressing methods */
+	noErrors &= create_func_word(words_list, true, false, false,
+								 method->func, orig_info->reg_num, orig_info->addressing_method,
+								 dest_info->reg_num, dest_info->addressing_method);
+	(*words_added_count)++;
+	/* add the third word, beacuse labe need to return to it in the future */
+	noErrors &= add_additional_words(orig_info, words_list, returnTo, line_number, words_added_count);
+	noErrors &= add_additional_words(dest_info, words_list, returnTo, line_number, words_added_count);
+	return noErrors;
+}
+
+int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list, WordsToReturnToList *returnTo)
 {
 	char orig_op[MAX_LINE_LENGTH + 1], dest_op[MAX_LINE_LENGTH + 1];
-	Addressing_Methods orig_addressing_method = -1;
-	Addressing_Methods dest_addressing_method = -1;
+	int ret_val = 0;
 	Method *cur_method;
+	OpperandInfo *orig_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
+	OpperandInfo *dest_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
 
-	if (split_operands(line, is_label_first, orig_op, dest_op, line_number) == false) /* operands format error */
-		return -1;
+	/* operands format error */
+	if (split_operands(line, is_label_first, orig_op, dest_op, line_number) == false)
+	{
+		goto cleanup;
+	}
 
 	strcpy(orig_op, trim(orig_op)); /* clean whitespaces */
 	strcpy(dest_op, trim(dest_op));
@@ -60,21 +113,26 @@ int conv_method(char *line, char *method, bool is_label_first, Method *methods_l
 	if (!check_operands_number(cur_method, orig_op, dest_op))
 	{
 		printf("Line %d- Error: Number of operands does not match the method type\n", line_number);
-		return -1;
+		goto cleanup;
 	}
 
-	get_addresing_method(orig_op, &orig_addressing_method, line_number);
-	get_addresing_method(dest_op, &dest_addressing_method, line_number);
+	get_addresing_method(orig_op, orig_info, line_number);
+	get_addresing_method(dest_op, dest_info, line_number);
 
-	if (!(is_valid_addressing(cur_method, orig_addressing_method, true) && is_valid_addressing(cur_method, dest_addressing_method, false)))
+	if (!(is_valid_addressing(cur_method, orig_info->addressing_method, true) && is_valid_addressing(cur_method, dest_info->addressing_method, false)))
 	{
 		printf("Line %d- Error: Operand addressing method does not match the method type\n", line_number);
-		return -1;
+		goto cleanup;
 	}
 
-	/* push words */
+	handle_operands_info(cur_method, orig_info, dest_info, words_list, returnTo, line_number, &ret_val);
 
-	return 1;
+cleanup:
+	if (orig_info)
+		free(orig_info);
+	if (dest_info)
+		free(dest_info);
+	return ret_val;
 }
 
 int conv_command(char *line, int command_kind, int line_number, WordsList *words_list)
@@ -111,7 +169,7 @@ int conv_command(char *line, int command_kind, int line_number, WordsList *words
 					;
 				i++;
 
-				if (create_data_word(words_list, true, false, false, data_value))
+				if (create_data_word(words_list, true, false, false, data_value, line_number, NULL))
 					words_num++;
 			}
 
@@ -135,12 +193,12 @@ int conv_command(char *line, int command_kind, int line_number, WordsList *words
 			;
 		for (i++; line[i] != '"'; i++)
 		{
-			if (create_data_word(words_list, true, false, false, (int)(line[i])))
+			if (create_data_word(words_list, true, false, false, (int)(line[i]), line_number, NULL))
 			{
 				words_num++;
 			}
 		}
-		if (create_data_word(words_list, true, false, false, (int)('\0')))
+		if (create_data_word(words_list, true, false, false, (int)('\0'), line_number, NULL))
 		{
 			words_num++;
 		}
