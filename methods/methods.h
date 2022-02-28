@@ -39,7 +39,7 @@ typedef struct OpperandInfo
     short reg_num;
     int additional_first_word;
     int additional_second_word;
-    bool is_external;
+    bool return_to_me;
 } OpperandInfo;
 
 

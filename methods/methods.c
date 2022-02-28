@@ -146,7 +146,8 @@ bool get_index_or_direct_addressing(char *operand, OpperandInfo *ret_info, int l
             {
                 ret_info->reg_num = reg_number;
                 ret_info->addressing_method = INDEX;
-                /* need to add "is_external" */
+                ret_info->additional_first_word = 0;
+                ret_info->return_to_me = true;
                 return true;
             }
             else
@@ -158,7 +159,8 @@ bool get_index_or_direct_addressing(char *operand, OpperandInfo *ret_info, int l
     else
     {
         ret_info->addressing_method = DIRECT;
-        /* need to add "is_external" */
+        ret_info->additional_first_word = 0;
+        ret_info->return_to_me = true;
     }
     return true;
 }
@@ -170,6 +172,7 @@ bool get_addresing_method(char *operand, OpperandInfo *ret_info, int line_number
     if (is_empty(operand))
     {
         ret_info->addressing_method = NO_OPERAND;
+        ret_info->return_to_me = false;
         return true;
     }
 
@@ -177,6 +180,7 @@ bool get_addresing_method(char *operand, OpperandInfo *ret_info, int line_number
     {
         ret_info->reg_num = reg_number;
         ret_info->addressing_method = REG_DIRECT;
+        ret_info->return_to_me = false;
         return true;
     }
 
@@ -186,6 +190,8 @@ bool get_addresing_method(char *operand, OpperandInfo *ret_info, int line_number
         {
             ret_info->additional_first_word = temp;
             ret_info->addressing_method = IMMEDIATE;
+            ret_info->return_to_me = false;
+            temp = 0;
             return true;
         }
     }

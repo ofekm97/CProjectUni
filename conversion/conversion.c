@@ -42,9 +42,10 @@ int quot_marks_counter(char *line)
 	return counter;
 }
 
-bool add_additional_words(OpperandInfo *info, WordsList *words_list, bool expecting_data, int *words_added_count)
+bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToReturnToList *returnTo, int line_number, int *words_added_count)
 {
 	bool noErrors = true;
+	returnTo = info->return_to_me ? returnTo : NULL;
 
 	/* REG_DIRECT is the only one without additional words */
 	if (info->addressing_method == REG_DIRECT)
@@ -52,24 +53,23 @@ bool add_additional_words(OpperandInfo *info, WordsList *words_list, bool expect
 		return noErrors;
 	}
 	/* this needs to be changed accoding to is external and so.. */
-	noErrors &= create_data_word(words_list, true, false, false, info->additional_first_word, expecting_data);
+	noErrors &= create_data_word(words_list, true, false, false, info->additional_first_word, line_number, returnTo);
 	(*words_added_count)++;
 	/* REG_DIRECT is the only one with one additional word */
 	if (info->addressing_method == IMMEDIATE)
 	{
 		return noErrors;
 	}
-	noErrors &= create_data_word(words_list, true, false, false, info->additional_second_word, expecting_data);
+	noErrors &= create_data_word(words_list, true, false, false, info->additional_second_word, line_number, NULL);
 	(*words_added_count)++;
 	return noErrors;
 }
 
-bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo *dest_info, WordsList *words_list, int* words_added_count)
+bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo *dest_info, WordsList *words_list, WordsToReturnToList *returnTo, int line_number, int *words_added_count)
 {
-	bool expecting_data = orig_info->is_external || orig_info->is_external;
 	bool noErrors = true;
-
-	noErrors &= create_data_word(words_list, true, false, false, method->opcode, expecting_data);
+	/* add the first word with the opcode */
+	noErrors &= create_data_word(words_list, true, false, false, method->opcode, line_number, NULL);
 
 	if (!noErrors)
 		return noErrors;
@@ -80,17 +80,18 @@ bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo 
 	{
 		return noErrors;
 	}
-
+	/* add the second word with the func and regs and addressing methods */
 	noErrors &= create_func_word(words_list, true, false, false,
 								 method->func, orig_info->reg_num, orig_info->addressing_method,
-								 dest_info->reg_num, dest_info->addressing_method, expecting_data);
+								 dest_info->reg_num, dest_info->addressing_method);
 	(*words_added_count)++;
-	noErrors &= add_additional_words(orig_info, words_list, expecting_data, words_added_count);
-	noErrors &= add_additional_words(dest_info, words_list, expecting_data, words_added_count);
+	/* add the third word, beacuse labe need to return to it in the future */
+	noErrors &= add_additional_words(orig_info, words_list, returnTo, line_number, words_added_count);
+	noErrors &= add_additional_words(dest_info, words_list, returnTo, line_number, words_added_count);
 	return noErrors;
 }
 
-int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list)
+int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list, WordsToReturnToList *returnTo)
 {
 	char orig_op[MAX_LINE_LENGTH + 1], dest_op[MAX_LINE_LENGTH + 1];
 	int ret_val = 0;
@@ -124,7 +125,7 @@ int conv_method(char *line, char *method, bool is_label_first, Method *methods_l
 		goto cleanup;
 	}
 
-	handle_operands_info(cur_method, orig_info, dest_info, words_list, &ret_val);
+	handle_operands_info(cur_method, orig_info, dest_info, words_list, returnTo, line_number, &ret_val);
 
 cleanup:
 	if (orig_info)
@@ -168,7 +169,7 @@ int conv_command(char *line, int command_kind, int line_number, WordsList *words
 					;
 				i++;
 
-				if (create_data_word(words_list, true, false, false, data_value, false))
+				if (create_data_word(words_list, true, false, false, data_value, line_number, NULL))
 					words_num++;
 			}
 
@@ -192,12 +193,12 @@ int conv_command(char *line, int command_kind, int line_number, WordsList *words
 			;
 		for (i++; line[i] != '"'; i++)
 		{
-			if (create_data_word(words_list, true, false, false, (int)(line[i]), false))
+			if (create_data_word(words_list, true, false, false, (int)(line[i]), line_number, NULL))
 			{
 				words_num++;
 			}
 		}
-		if (create_data_word(words_list, true, false, false, (int)('\0'), false))
+		if (create_data_word(words_list, true, false, false, (int)('\0'), line_number, NULL))
 		{
 			words_num++;
 		}

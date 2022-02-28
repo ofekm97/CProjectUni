@@ -29,12 +29,12 @@ int get_second_word(Word *word)
     return return_value;
 }
 
-int convert_words_to_ints(Word* words, int return_values[MAX_WORD_COUNT], int size)
+int convert_words_to_ints(Word *words, int return_values[MAX_WORD_COUNT], int size)
 {
-    Word* current = words;
+    Word *current = words;
     int i = 0;
     int current_value = 0;
-    for (; i < size; i++, current=current->next);
+    for (; i < size; i++, current = current->next);
     {
         current_value = 0;
         current_value |= get_ARE(current);
@@ -79,13 +79,12 @@ int get_base_and_offset(int address, int *base, int *offset)
     return 1;
 }
 
-bool create_data_word(WordsList* words_list, bool A, bool R, bool E, int data, bool expecting_data)
+bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, int line_number, WordsToReturnToList *returnTo)
 {
     Word *new_word = (Word *)malloc(sizeof(Word));
     if (new_word != NULL)
     {
         new_word->is_func_word = false;
-        new_word->expecting_data = expecting_data;
         new_word->A = A;
         new_word->R = R;
         new_word->E = E;
@@ -98,16 +97,19 @@ bool create_data_word(WordsList* words_list, bool A, bool R, bool E, int data, b
         return false;
     }
     push_to_words_list(words_list, new_word);
+    if (returnTo)
+    {
+        return create_word_to_return_to(returnTo, new_word, line_number);
+    }
     return true;
 }
 
-bool create_func_word(WordsList* words_list, bool A, bool R, bool E, short func, short orig_reg, short orig_addressing, short dest_reg, short dest_addressing, bool expecting_data)
+bool create_func_word(WordsList *words_list, bool A, bool R, bool E, short func, short orig_reg, short orig_addressing, short dest_reg, short dest_addressing)
 {
     Word *new_word = (Word *)malloc(sizeof(Word));
     if (new_word != NULL)
     {
         new_word->is_func_word = true;
-        new_word->expecting_data = expecting_data;
         new_word->A = A;
         new_word->R = R;
         new_word->E = E;
@@ -146,7 +148,8 @@ WordsList *init_words_list()
 void push_to_words_list(WordsList *words_list, Word *new_word)
 {
     Word *current = words_list->words;
-    if(current == NULL) {
+    if (current == NULL)
+    {
         words_list->words = new_word;
         return;
     }
@@ -161,7 +164,7 @@ void push_to_words_list(WordsList *words_list, Word *new_word)
 void destroy_words_list(WordsList *words_list)
 {
     Word *next, *current = words_list->words;
-    while (current && current->next)
+    while (current)
     {
         next = current->next;
         free(current);
@@ -171,25 +174,114 @@ void destroy_words_list(WordsList *words_list)
         free(words_list);
 }
 
-void print_word(Word* current, int index) {
-    printf("printing word %d:\n", index);
+void print_word(Word *current)
+{
     printf("A: %d, R: %d, E: %d\n", current->A, current->R, current->E);
-    if(current->is_func_word) {
+    if (current->is_func_word)
+    {
         printf("func: %d, orig_reg: %d, dest_reg: %d\n", current->func, current->orig_reg, current->dest_reg);
         printf("orig_addressing: %d, dest_addressing: %d\n", current->orig_addressing, current->dest_addressing);
     }
-    else {
+    else
+    {
         printf("opcode / data: %d\n", current->opcode);
     }
 }
 
-void print_words_list(WordsList *words_list) {
+void print_words_list(WordsList *words_list)
+{
     int i = 1;
     Word *current = words_list->words;
     printf("\n\n***** this is for debug, should not be in final code *** %d\n", words_list->size);
-    /*while(current) {
-        print_word(current, i);
+    while (current)
+    {
+        /*printf("printing word %d:\n", i);*/
+        print_word(current);
         current = current->next;
         i++;
-    }*/ 
+    }
+}
+
+WordsToReturnToList *init_words_to_return_list()
+{
+    WordsToReturnToList *words_to_return = (WordsToReturnToList *)malloc(sizeof(WordsToReturnToList));
+    if (words_to_return != NULL)
+    {
+        words_to_return->first = NULL;
+    }
+    else
+    {
+        /* should print an error? */
+        return NULL;
+    }
+    return words_to_return;
+}
+
+void push_to_words_to_return_list(WordsToReturnToList *words_to_return, WordToReturnTo *new_words_to_return_to)
+{
+    WordToReturnTo *current = words_to_return->first;
+    if (current == NULL)
+    {
+        words_to_return->first = new_words_to_return_to;
+        return;
+    }
+
+    while (current->next)
+        current = current->next;
+    /* now current is pointing the last word in the list */
+    current->next = new_words_to_return_to;
+}
+
+void destroy_words_to_return_list(WordsToReturnToList *words_to_return)
+{
+    WordToReturnTo *next, *current = words_to_return->first;
+    while (current)
+    {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+    if (words_to_return != NULL)
+        free(words_to_return);
+}
+
+bool create_word_to_return_to(WordsToReturnToList *words_to_return_to_list, Word *return_to, int line_number)
+{
+    WordToReturnTo *new_word_to_return_to = (WordToReturnTo *)malloc(sizeof(WordToReturnTo));
+    if (new_word_to_return_to)
+    {
+        new_word_to_return_to->word = return_to;
+        new_word_to_return_to->line_numer = line_number;
+        new_word_to_return_to->next = NULL;
+    }
+    else
+    {
+        /* should print an error? */
+        return false;
+    }
+    push_to_words_to_return_list(words_to_return_to_list, new_word_to_return_to);
+    return true;
+}
+
+void print_word_to_return(WordToReturnTo *current, int index)
+{
+    /*printf("printing word %d:\n", index);*/
+    printf("line: %d\n", current->line_numer);
+    /*print_word(current->word);*/
+}
+
+void print_return_to_words_list(WordsToReturnToList *words_list)
+{
+    int i = 1;
+    WordToReturnTo *current = words_list->first;
+    if (!current)
+    {
+        printf("No words to return to :(\n");
+    }
+    while (current)
+    {
+        print_word_to_return(current, i);
+        current = current->next;
+        i++;
+    }
 }
