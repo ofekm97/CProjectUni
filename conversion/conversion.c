@@ -47,6 +47,10 @@ bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToRetu
 	bool noErrors = true;
 	returnTo = info->return_to_me ? returnTo : NULL;
 
+	if(info->addressing_method == NO_OPERAND)
+		info->addressing_method = 0; 
+		return true;
+
 	/* REG_DIRECT is the only one without additional words */
 	if (info->addressing_method == REG_DIRECT)
 	{
@@ -91,6 +95,14 @@ bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo 
 	return noErrors;
 }
 
+void clean_info(OpperandInfo *info) {
+	info->return_to_me = false;
+	info->reg_num = 0;
+	info->addressing_method = 0;
+	info->additional_first_word = 0;
+	info->additional_second_word = 0;
+}
+
 int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list, WordsToReturnToList *returnTo)
 {
 	char orig_op[MAX_LINE_LENGTH + 1], dest_op[MAX_LINE_LENGTH + 1];
@@ -98,6 +110,8 @@ int conv_method(char *line, char *method, bool is_label_first, Method *methods_l
 	Method *cur_method;
 	OpperandInfo *orig_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
 	OpperandInfo *dest_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
+	clean_info(orig_info);
+	clean_info(dest_info);
 
 	/* operands format error */
 	if (split_operands(line, is_label_first, orig_op, dest_op, line_number) == false)

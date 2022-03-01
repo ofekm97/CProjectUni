@@ -18,7 +18,7 @@ int get_ARE(Word *word)
     return value;
 }
 
-int get_second_word(Word *word)
+int convert_func_word_to_int(Word *word)
 {
     int return_value = 0;
     return_value |= (word->func & HEX_1111) << FUNC_LOCATION;
@@ -29,34 +29,12 @@ int get_second_word(Word *word)
     return return_value;
 }
 
-int convert_words_to_ints(Word *words, int return_values[MAX_WORD_COUNT], int size)
-{
-    Word *current = words;
-    int i = 0;
-    int current_value = 0;
-    for (; i < size; i++, current = current->next);
-    {
-        current_value = 0;
-        current_value |= get_ARE(current);
-        /* seccond iteration is the func, dest and orig reg and addressing */
-        if (i == 1)
-        {
-            current_value |= get_second_word(current);
-        }
-        else
-        {
-            current_value |= (current->opcode & ALL_OPCODE_BITS_ON);
-        }
-        return_values[i] = current_value;
-    }
-    return (int)return_values;
-}
-
-int convert_int_to_hex_line(int line_value, char hex_value[HEX_STRING_LENGTH])
+void convert_int_to_hex_line(int line_value, char hex_value[HEX_STRING_LENGTH])
 {
     int i = GORUPS_COUNT;
     char groups[GORUPS_COUNT] = {'A', 'B', 'C', 'D', 'E'};
     int groups_values[GORUPS_COUNT] = {0, 0, 0, 0, 0};
+    /* For each group, get the group value */
     for (; 0 < i; i--)
     {
         groups_values[i - 1] = (line_value >> (4 * (GORUPS_COUNT - i))) & HEX_1111;
@@ -66,10 +44,45 @@ int convert_int_to_hex_line(int line_value, char hex_value[HEX_STRING_LENGTH])
     {
         hex_value[3 * i] = groups[i];
         sprintf(hex_value + (3 * i) + 1, "%x", groups_values[i]);
-        hex_value[(3 * i) + 2] = HEX_STRING_SEP;
+        if (i < (GORUPS_COUNT - 1))
+            hex_value[(3 * i) + 2] = HEX_STRING_SEP;
     }
     hex_value[HEX_STRING_LENGTH - 1] = '\0';
-    return 1;
+}
+
+void convert_words_to_hex_line(Word *word, char hex_value[HEX_STRING_LENGTH])
+{
+    int word_value = 0;
+    word_value |= get_ARE(word);
+    /* convert the func, dest and orig reg and addressing */
+    if (word->is_func_word)
+    {
+        word_value |= convert_func_word_to_int(word);
+    }
+    /* convert data / opcode word */
+    else
+    {
+        word_value |= (word->opcode & ALL_OPCODE_BITS_ON);
+    }
+
+    convert_int_to_hex_line(word_value, hex_value);
+}
+
+void write_word_to_file(FILE *output, Word *word)
+{
+    char hex_value[HEX_STRING_LENGTH];
+    convert_words_to_hex_line(word, hex_value);
+    fprintf(output, "%s", hex_value);
+}
+
+void write_all_words_to_file(FILE *output, WordsList *words_list)
+{
+    Word *current = words_list->words;
+    while (current)
+    {
+        write_word_to_file(output, current);
+        current = current->next;
+    }
 }
 
 int get_base_and_offset(int address, int *base, int *offset)
