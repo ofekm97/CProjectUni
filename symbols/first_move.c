@@ -200,7 +200,8 @@ bool first_move(char* file_name)
 			*/
 			printf("dc: %d, ic: %d\n", dc, ic);
 	}
-
+print_words_list(code_img);
+print_words_list(data_img);
 	if (!error_flag)
 		return second_move(inputf, symbol_table, cut_am(file_name));
 
