@@ -47,9 +47,11 @@ bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToRetu
 	bool noErrors = true;
 	returnTo = info->return_to_me ? returnTo : NULL;
 
-	if(info->addressing_method == NO_OPERAND)
-		info->addressing_method = 0; 
+	if (info->addressing_method == NO_OPERAND)
+	{
+		info->addressing_method = 0;
 		return true;
+	}
 
 	/* REG_DIRECT is the only one without additional words */
 	if (info->addressing_method == REG_DIRECT)
@@ -72,6 +74,8 @@ bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToRetu
 bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo *dest_info, WordsList *words_list, WordsToReturnToList *returnTo, int line_number, int *words_added_count)
 {
 	bool noErrors = true;
+	int orig_addressing_method = orig_info->addressing_method == NO_OPERAND ? 0 : orig_info->addressing_method;
+	int dest_addressing_method = dest_info->addressing_method == NO_OPERAND ? 0 : dest_info->addressing_method;
 	/* add the first word with the opcode */
 	noErrors &= create_data_word(words_list, true, false, false, method->opcode, line_number, NULL);
 
@@ -86,8 +90,8 @@ bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo 
 	}
 	/* add the second word with the func and regs and addressing methods */
 	noErrors &= create_func_word(words_list, true, false, false,
-								 method->func, orig_info->reg_num, orig_info->addressing_method,
-								 dest_info->reg_num, dest_info->addressing_method);
+								 method->func, orig_info->reg_num, orig_addressing_method,
+								 dest_info->reg_num, dest_addressing_method);
 	(*words_added_count)++;
 	/* add the third word, beacuse labe need to return to it in the future */
 	noErrors &= add_additional_words(orig_info, words_list, returnTo, line_number, words_added_count);
@@ -95,7 +99,8 @@ bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo 
 	return noErrors;
 }
 
-void clean_info(OpperandInfo *info) {
+void clean_info(OpperandInfo *info)
+{
 	info->return_to_me = false;
 	info->reg_num = 0;
 	info->addressing_method = 0;
