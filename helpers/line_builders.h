@@ -53,10 +53,11 @@ typedef struct WordsList
     int size;
 } WordsList;
 
-typedef struct WordToReturnTo {
-    Word* word;
+typedef struct WordToReturnTo
+{
+    Word *word;
     int line_numer;
-    struct WordToReturnTo* next;
+    struct WordToReturnTo *next;
 } WordToReturnTo;
 
 typedef struct WordsToReturnToList
@@ -64,9 +65,7 @@ typedef struct WordsToReturnToList
     WordToReturnTo *first;
 } WordsToReturnToList;
 
-int convert_words_to_ints(Word* words, int return_values[MAX_WORD_COUNT], int size);
-
-int convert_int_to_hex_line(int line_value, char hex_value[HEX_STRING_LENGTH]);
+void write_all_words_to_file(FILE *output, WordsList *words_list);
 
 int get_base_and_offset(int address, int *base, int *offset);
 
@@ -74,18 +73,17 @@ WordsList *init_words_list();
 
 void push_to_words_list(WordsList *words_list, Word *new_words);
 
-void destroy_words_list(WordsList* words_list);
+void destroy_words_list(WordsList *words_list);
 
-bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, int line_number, WordsToReturnToList* returnTo);
+bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, int line_number, WordsToReturnToList *returnTo);
 
 bool create_func_word(WordsList *words_list, bool A, bool R, bool E, short func, short orig_reg, short orig_addressing, short dest_reg, short dest_addressing);
 
 WordsToReturnToList *init_words_to_return_list();
 
-void destroy_words_to_return_list(WordsToReturnToList* words_to_return_to_list);
+void destroy_words_to_return_list(WordsToReturnToList *words_to_return_to_list);
 
-bool create_word_to_return_to(WordsToReturnToList* words_to_return_to_list, Word *return_to, int line_number);
-
+bool create_word_to_return_to(WordsToReturnToList *words_to_return_to_list, Word *return_to, int line_number);
 
 /* Debuging and Shit */
 void print_words_list(WordsList *words_list);
