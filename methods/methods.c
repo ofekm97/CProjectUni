@@ -220,3 +220,42 @@ bool check_operands_number(Method *method, char origin_operand[MAX_LINE_LENGTH +
 
     return noErrors;
 }
+
+void get_operand_labels(char* line, char* orig_op, char* dest_op, int line_number)
+{
+	int i = 0;
+	bool is_label_first;
+	char label_name[MAX_LABEL_LENGTH];
+	OpperandInfo *orig_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
+	OpperandInfo *dest_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
+	clean_info(orig_info);
+	clean_info(dest_info);
+
+	is_label_first = is_label_def(line, label_name, line_number);
+
+	split_operands(line, is_label_first, orig_op, dest_op, line_number);
+	strcpy(orig_op, trim(orig_op));
+	strcpy(dest_op, trim(dest_op));
+
+	get_addresing_method(orig_op, orig_info, line_number);
+	get_addresing_method(dest_op, dest_info, line_number);
+
+	if (!(orig_info -> addressing_method == DIRECT || orig_info -> addressing_method == INDEX))
+		orig_op[0] = '\0';
+	if (!(dest_info -> addressing_method == DIRECT || dest_info -> addressing_method == INDEX))
+		dest_op[0] = '\0';
+
+	if (orig_info -> addressing_method == INDEX)
+	{
+		for (; orig_op[i] != '['; i++);
+		orig_op[i] = '\0';
+	}
+
+	if (dest_info -> addressing_method == INDEX)
+	{
+		for (; dest_op[i] != '['; i++);
+		dest_op[i] = '\0';
+	}
+	free(orig_info);
+	free(dest_info);
+}

@@ -10,6 +10,7 @@
 #define MAX_LINE_LENGTH (80)
 #define MAX_LABEL_LENGTH (31)
 #define MAX_MACRO_NAME_LENGTH (31)
+#define MAX_FILE_NAME_LENGTH (31)
 
 #define DATA_COMMAND (1)
 #define STRING_COMMAND (2)

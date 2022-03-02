@@ -192,18 +192,13 @@ bool first_move(char* file_name)
 		}
 
 		fix_symbol_table(symbol_table, ic); /* add the IC to the address of data symbols */
-		if (error_flag == false) /* for debug */
-			print_return_to_words_list(returnTo);
-			/*
-			print_words_list(data_img);
-			print_words_list(code_img);
-			*/
+		
 			printf("dc: %d, ic: %d\n", dc, ic);
 	}
 print_words_list(code_img);
 print_words_list(data_img);
 	if (!error_flag)
-		return second_move(inputf, symbol_table, cut_am(file_name));
+		return second_move(inputf, symbol_table, cut_am(file_name), returnTo);
 
 	printf("error in first move\n");
 	return false;
