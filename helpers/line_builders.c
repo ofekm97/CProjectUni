@@ -162,6 +162,7 @@ WordsList *init_words_list()
 void push_to_words_list(WordsList *words_list, Word *new_word)
 {
     Word *current = words_list->words;
+    new_word->index = words_list->size++;
     if (current == NULL)
     {
         words_list->words = new_word;
@@ -172,7 +173,6 @@ void push_to_words_list(WordsList *words_list, Word *new_word)
         current = current->next;
     /* now current is pointing the last word in the list */
     current->next = new_word;
-    words_list->size++;
 }
 
 void destroy_words_list(WordsList *words_list)
@@ -190,6 +190,7 @@ void destroy_words_list(WordsList *words_list)
 
 void print_word(Word *current)
 {
+    printf("Word index: %d\n", current->index);
     printf("A: %d, R: %d, E: %d\n", current->A, current->R, current->E);
     if (current->is_func_word)
     {
@@ -265,7 +266,7 @@ bool create_word_to_return_to(WordsToReturnToList *words_to_return_to_list, Word
     if (new_word_to_return_to)
     {
         new_word_to_return_to->word = return_to;
-        new_word_to_return_to->line_numer = line_number;
+        new_word_to_return_to->line_number = line_number;
         new_word_to_return_to->next = NULL;
     }
     else
@@ -280,7 +281,7 @@ bool create_word_to_return_to(WordsToReturnToList *words_to_return_to_list, Word
 void print_word_to_return(WordToReturnTo *current, int index)
 {
    /* printf("printing word %d:\n", index);*/
-    printf("line: %d\n", current->line_numer);
+    printf("line: %d\n", current->line_number);
     /*print_word(current->word);*/
 }
 

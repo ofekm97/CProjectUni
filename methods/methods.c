@@ -259,3 +259,12 @@ void get_operand_labels(char* line, char* orig_op, char* dest_op, int line_numbe
 	free(orig_info);
 	free(dest_info);
 }
+
+void clean_info(OpperandInfo *info)
+{
+	info->return_to_me = false;
+	info->reg_num = 0;
+	info->addressing_method = 0;
+	info->additional_first_word = 0;
+	info->additional_second_word = 0;
+}
