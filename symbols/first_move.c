@@ -105,7 +105,7 @@ bool first_move(char* file_name)
 								symbol_table = insert_symbol(symbol_table, label, ic, CODE, false);
 
 								new_words_num = conv_method(line, method_name, true, methods_list, line_number, code_img, returnTo);
-								if (new_words_num < 0)
+								if (new_words_num <= 0)
 									error_flag = true;
 
 								ic += new_words_num;
@@ -147,7 +147,7 @@ bool first_move(char* file_name)
 					case STRING_COMMAND:
 						new_words_num = conv_command(line, 2, line_number, data_img);
 						if (new_words_num < 0)
-							error_flag = true;
+							error_flag = true;;
 
 						dc += new_words_num;
 						break;
@@ -171,7 +171,7 @@ bool first_move(char* file_name)
 						if (method_index(methods_list, method_name) != -1) /* method sentence */
 						{
 							new_words_num = conv_method(line, method_name, false, methods_list, line_number, code_img, returnTo);
-							if (new_words_num < 0)
+							if (new_words_num <= 0)
 								error_flag = true;
 
 							ic += new_words_num;

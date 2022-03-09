@@ -1,6 +1,6 @@
 #include "second_move.h"
 
-bool write_to_externals_file(Symbol* symbol, char* file_name, bool is_first_extern)
+bool write_to_externals_file(Symbol* symbol, char* file_name, bool is_first_extern, int word_num)
 {
 	FILE* externals_file = NULL;
 
@@ -18,8 +18,8 @@ bool write_to_externals_file(Symbol* symbol, char* file_name, bool is_first_exte
 		printf("Error: cannot open file: %s\n", file_name);
 		return false;
 	}
-										/* instead of 0 should be ic */
-	fprintf(externals_file, "%s BASE %d\n%s OFFSET %d\n\n", symbol -> label_name, 0, symbol -> label_name, 0 + 1);
+								
+	fprintf(externals_file, "%s BASE %d\n%s OFFSET %d\n\n", symbol -> label_name, word_num, symbol -> label_name, word_num + 1);
 
 	fclose(externals_file);
 	return true;
@@ -62,6 +62,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 	char orig_op[MAX_LINE_LENGTH + 1], dest_op[MAX_LINE_LENGTH + 1];
 	char file_name_copy[MAX_FILE_NAME_LENGTH];
 	char c;
+	int additional_from_orig_op;
 	int line_number = 0;
 
 	fseek(inputf, 0, SEEK_SET); /* go back to the beginning of the file */
@@ -82,8 +83,8 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 		if (cur_return_to != NULL)
 		{
 			if (line_number == cur_return_to -> line_number)
-			{ 
-				get_operand_labels(line, orig_op, dest_op, line_number);
+			{
+				additional_from_orig_op = get_operand_labels(line, orig_op, dest_op, line_number);
 
 				if (strcmp(orig_op, "") != 0)
 				{
@@ -97,8 +98,8 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 					}
 
 					if (s -> attribute == EXTERNAL)
-					{	
-						write_to_externals_file(s, file_name, is_first_extern);
+					{						/* instead of 0 should be: cur_return_to -> word -> word_num */
+						write_to_externals_file(s, file_name, is_first_extern, 0 + 2);
 						is_first_extern = false;
 					}
 					/* change unknown words */
@@ -116,12 +117,15 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 					}
 
 					if (s -> attribute == EXTERNAL)
-					{
-						write_to_externals_file(s, file_name, is_first_extern);
+					{						/* instead of 0 should be: cur_return_to -> word -> word_num */
+						write_to_externals_file(s, file_name, is_first_extern, 0 + 2 + additional_from_orig_op);
 						is_first_extern = false;
 					}
 					/* change unknown words */
 				}
+
+				if (strcmp(orig_op, "") != 0 && strcmp(dest_op, "")) /* need to change later */
+					cur_return_to = cur_return_to -> next;
 
 				cur_return_to = cur_return_to -> next;
 				continue;
@@ -133,7 +137,12 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 			s = search_symbol(symbol_table, label_name);
 
 			if (s != NULL) /* symbol exist */
-			{
+			{	
+				if (s -> attribute == EXTERNAL)
+				{
+					printf("Line %d- Error: Label \"%s\" define as extern and entry together\n", line_number, label_name);
+				}
+
 				s -> entry = true;
 				write_to_entries_file(s, file_name_copy, is_first_entry);
 				is_first_entry = false;

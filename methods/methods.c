@@ -66,6 +66,8 @@ int method_index(Method *command_list, char *word)
         printf("method list is null, returning -1");
         return -1;
     }
+    if (strcmp(word, "sto") == 0)
+	return -1;
     for (; i < AMOUNT_OF_METHODS; i++)
     {
         current = command_list[i];
@@ -121,6 +123,28 @@ bool is_valid_addressing(Method *method, Addressing_Methods operand_type, bool i
     return (bool)(is_source ? (method->src_addressing_method & bit_wise_addressing) : (method->dest_addressing_method & bit_wise_addressing));
 }
 
+bool check_index(char* str)
+{
+	int i = 0;
+
+	if (str[0] != 'r')
+		return false;
+
+	for (; str[i] != ']'; i++)
+	{
+		if (str[i] == '\0')
+			return false;
+	}
+
+	if (i != 2 && i != 3)
+		return false;
+
+	if (str[i + 1] != '\0')
+		return false;
+
+	return true;
+}
+
 bool get_index_or_direct_addressing(char *operand, OpperandInfo *ret_info, int line_number)
 {
     int braces_index = 0, reg_number = -1;
@@ -137,24 +161,28 @@ bool get_index_or_direct_addressing(char *operand, OpperandInfo *ret_info, int l
 
     if ((*temp))
     {
+	if (!check_index(temp + 1))
+	{
+		printf("Line %d- Error: Index format is unvalid\n", line_number);
+		return false;
+	}
+
         memcpy(reg, temp + 1, 3);
+
+	 if (reg[2] == ']')
+		reg[2] = '\0';
+		
         reg[3] = '\0';
 
         if (get_reg_number(reg, &reg_number, line_number))
         {
-            if (10 <= reg_number || reg_number <= 15)
-            {
                 ret_info->reg_num = reg_number;
                 ret_info->addressing_method = INDEX;
                 ret_info->additional_first_word = 0;
                 ret_info->return_to_me = true;
                 return true;
-            }
-            else
-            {
-                return false;
-            }
         }
+	return false;
     }
     else
     {
@@ -221,11 +249,13 @@ bool check_operands_number(Method *method, char origin_operand[MAX_LINE_LENGTH +
     return noErrors;
 }
 
-void get_operand_labels(char* line, char* orig_op, char* dest_op, int line_number)
+/* return the number of the additional words from the origin operand */
+int get_operand_labels(char* line, char* orig_op, char* dest_op, int line_number) 
 {
 	int i = 0;
 	bool is_label_first;
 	char label_name[MAX_LABEL_LENGTH];
+	int ret_val = 2;
 	OpperandInfo *orig_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
 	OpperandInfo *dest_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
 	clean_info(orig_info);
@@ -241,7 +271,14 @@ void get_operand_labels(char* line, char* orig_op, char* dest_op, int line_numbe
 	get_addresing_method(dest_op, dest_info, line_number);
 
 	if (!(orig_info -> addressing_method == DIRECT || orig_info -> addressing_method == INDEX))
+	{	
 		orig_op[0] = '\0';
+
+		if (orig_info -> addressing_method == IMMEDIATE)
+			ret_val = 1;
+		else
+			ret_val = 0;
+	}
 	if (!(dest_info -> addressing_method == DIRECT || dest_info -> addressing_method == INDEX))
 		dest_op[0] = '\0';
 
@@ -258,4 +295,5 @@ void get_operand_labels(char* line, char* orig_op, char* dest_op, int line_numbe
 	}
 	free(orig_info);
 	free(dest_info);
+	return ret_val;
 }

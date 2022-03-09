@@ -142,8 +142,11 @@ int conv_method(char *line, char *method, bool is_label_first, Method *methods_l
 		goto cleanup;
 	}
 
-	get_addresing_method(orig_op, orig_info, line_number);
-	get_addresing_method(dest_op, dest_info, line_number);
+	if (!get_addresing_method(orig_op, orig_info, line_number))
+		goto cleanup;
+
+	if (!get_addresing_method(dest_op, dest_info, line_number))
+		goto cleanup;
 
 	if (!(is_valid_addressing(cur_method, orig_info->addressing_method, true) && is_valid_addressing(cur_method, dest_info->addressing_method, false)))
 	{

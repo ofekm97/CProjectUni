@@ -46,7 +46,7 @@ bool get_reg_number(char *reg_name, int* ret_value, int line_number)
             return true;
     }
  
-    printf("Line %d- Error: Register number is not exist\n", line_number);
+    printf("Line %d- Error: Register is not exist\n", line_number);
     return false;
 }
 
@@ -264,9 +264,12 @@ void get_method_name(char* line, bool is_label_first, char* method_name)
 	int i = 0, j = 0;
 
 	if (is_label_first)
+	{
 		for (; line[i] != ':'; i++);
+		i++;
+	}
 	
-	for (i++; isspace(line[i]); i++);
+	for (; isspace(line[i]); i++);
 
 	while (isspace(line[i]) == 0 && line[i] != '\0')
 	{
