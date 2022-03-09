@@ -1,5 +1,5 @@
 #ifndef SYMBOL
-	#include "symbol_table.h"
+#include "symbol_table.h"
 #endif
 #ifndef CONVERSION
 #include "../conversion/conversion.h"
@@ -13,4 +13,4 @@
 
 #define FIRST_MOVE
 
-bool first_move(char* file_name);
+bool first_move(char *file_name);

@@ -92,7 +92,7 @@ int get_base_and_offset(int address, int *base, int *offset)
     return 1;
 }
 
-bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, int line_number, WordsToReturnToList *returnTo)
+bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, int line_number, WordsToReturnToList *returnTo, bool *returnToWordAdded)
 {
     Word *new_word = (Word *)malloc(sizeof(Word));
     if (new_word != NULL)
@@ -110,8 +110,9 @@ bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, i
         return false;
     }
     push_to_words_list(words_list, new_word);
-    if (returnTo)
+    if (returnTo && !returnToWordAdded)
     {
+        *returnToWordAdded = true;
         return create_word_to_return_to(returnTo, new_word, line_number);
     }
     return true;

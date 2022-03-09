@@ -75,7 +75,7 @@ void push_to_words_list(WordsList *words_list, Word *new_words);
 
 void destroy_words_list(WordsList *words_list);
 
-bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, int line_number, WordsToReturnToList *returnTo);
+bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, int line_number, WordsToReturnToList *returnTo, bool *returnToWordAdded);
 
 bool create_func_word(WordsList *words_list, bool A, bool R, bool E, short func, short orig_reg, short orig_addressing, short dest_reg, short dest_addressing);
 
