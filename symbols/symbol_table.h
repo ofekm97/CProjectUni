@@ -5,7 +5,6 @@
 #define SYMBOL
 
 #define MAX_LABEL_LENGTH (31)
-#define DONT_KNOW (0)
 #define CODE (1)
 #define DATA (2)
 #define EXTERNAL (3)
@@ -21,7 +20,7 @@ typedef struct Symbol
 
 	int offset;
 
-	short attribute; /* CODE, DATA, EXTERNAL or DONT_KNOW */
+	short attribute; /* CODE, DATA or EXTERNAL */
 
 	bool entry;
 

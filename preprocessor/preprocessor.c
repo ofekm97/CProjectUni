@@ -1,5 +1,4 @@
 #include "preprocessor.h"
-#define MAX_FILE_NAME_LENGTH 31
 
 /* this function return 1 if string is a macro definition line or 0 if not */
 int is_macro_def(char* line, char* name)

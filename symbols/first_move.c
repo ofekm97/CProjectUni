@@ -60,8 +60,9 @@ bool first_move(char* file_name)
 						error_flag = true;
 						break;
 					
-					case 1:
-					case 2:
+					case DATA_COMMAND:
+					case STRING_COMMAND:
+
 						s = search_symbol(symbol_table, label);
 						if (s == NULL) /* new symbol */
 						{
@@ -82,14 +83,14 @@ bool first_move(char* file_name)
 
 						break;
 
-					case 3:
-						 /* label define as external */
+					case EXTERN_COMMAND:
 
 						printf("Line %d- Warning: A label was defined before external command. Ignore the label.\n",line_number);
 
 						symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
 						break;
-					case 4:
+
+					case ENTRY_COMMAND:
 						printf("Line %d- Warning: A label was defined before entry command. Ignore the label.\n", line_number);
 						break;
 
@@ -191,17 +192,13 @@ bool first_move(char* file_name)
 		}
 
 		fix_symbol_table(symbol_table, ic); /* add the IC to the address of data symbols */
-		if (error_flag == false) /* for debug */
-			print_return_to_words_list(returnTo);
-			/*
-			print_words_list(data_img);
-			print_words_list(code_img);
-			*/
+		
 			printf("dc: %d, ic: %d\n", dc, ic);
 	}
-
+print_words_list(code_img);
+print_words_list(data_img);
 	if (!error_flag)
-		return second_move(inputf, symbol_table);
+		return second_move(inputf, symbol_table, cut_am(file_name), returnTo);
 
 	printf("error in first move\n");
 	return false;

@@ -56,7 +56,7 @@ typedef struct WordsList
 typedef struct WordToReturnTo
 {
     Word *word;
-    int line_numer;
+    int line_number;
     struct WordToReturnTo *next;
 } WordToReturnTo;
 

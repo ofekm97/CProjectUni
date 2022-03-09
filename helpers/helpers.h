@@ -10,6 +10,7 @@
 #define MAX_LINE_LENGTH (80)
 #define MAX_LABEL_LENGTH (31)
 #define MAX_MACRO_NAME_LENGTH (31)
+#define MAX_FILE_NAME_LENGTH (31)
 
 #define DATA_COMMAND (1)
 #define STRING_COMMAND (2)
@@ -35,6 +36,8 @@ bool is_comment(char* line);
 bool is_empty(char* line);
 
 char* cut_as(char* str);
+
+char* cut_am(char* str);
 
 void get_method_name(char* line, bool is_label_first, char* method_name);
 

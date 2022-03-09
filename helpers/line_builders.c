@@ -208,7 +208,7 @@ void print_words_list(WordsList *words_list)
     printf("\n\n***** this is for debug, should not be in final code *** %d\n", words_list->size);
     while (current)
     {
-        /*printf("printing word %d:\n", i);*/
+        printf("printing word %d:\n", i);
         print_word(current);
         current = current->next;
         i++;
@@ -278,7 +278,7 @@ bool create_word_to_return_to(WordsToReturnToList *words_to_return_to_list, Word
 
 void print_word_to_return(WordToReturnTo *current, int index)
 {
-    /*printf("printing word %d:\n", index);*/
+   /* printf("printing word %d:\n", index);*/
     printf("line: %d\n", current->line_numer);
     /*print_word(current->word);*/
 }
