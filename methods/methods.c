@@ -1,5 +1,7 @@
 #include "methods.h"
 
+#define OPCODE(val) (1 << (val))
+
 Method *init_methods_list()
 {
     int i = 0;
@@ -8,7 +10,7 @@ Method *init_methods_list()
 
     char *commands_names[AMOUNT_OF_METHODS] = {"mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne", "jsr", "red", "prn", "rts", "stop"};
     int group_num[AMOUNT_OF_METHODS] = {1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3};
-    int opcodes[AMOUNT_OF_METHODS] = {0, 1, 2, 2, 4, 5, 5, 5, 5, 9, 9, 9, 12, 13, 14, 15};
+    int opcodes[AMOUNT_OF_METHODS] = {OPCODE(0), OPCODE(1), OPCODE(2), OPCODE(2), OPCODE(4), OPCODE(5), OPCODE(5), OPCODE(5), OPCODE(5), OPCODE(9), OPCODE(9), OPCODE(9), OPCODE(12), OPCODE(13), OPCODE(14), OPCODE(15)};
     int funcs[AMOUNT_OF_METHODS] = {0, 0, 10, 11, 0, 10, 11, 12, 13, 10, 11, 12, 0, 0, 0, 0};
     int src_addressing_methods[AMOUNT_OF_METHODS] = {15, 15, 15, 15, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
     int dest_addressing_methods[AMOUNT_OF_METHODS] = {14, 15, 14, 14, 14, 14, 14, 14, 14, 6, 6, 6, 14, 15, -1, -1};
@@ -221,50 +223,52 @@ bool check_operands_number(Method *method, char origin_operand[MAX_LINE_LENGTH +
     return noErrors;
 }
 
-void get_operand_labels(char* line, char* orig_op, char* dest_op, int line_number)
+void get_operand_labels(char *line, char *orig_op, char *dest_op, int line_number)
 {
-	int i = 0;
-	bool is_label_first;
-	char label_name[MAX_LABEL_LENGTH];
-	OpperandInfo *orig_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
-	OpperandInfo *dest_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
-	clean_info(orig_info);
-	clean_info(dest_info);
+    int i = 0;
+    bool is_label_first;
+    char label_name[MAX_LABEL_LENGTH];
+    OpperandInfo *orig_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
+    OpperandInfo *dest_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
+    clean_info(orig_info);
+    clean_info(dest_info);
 
-	is_label_first = is_label_def(line, label_name, line_number);
+    is_label_first = is_label_def(line, label_name, line_number);
 
-	split_operands(line, is_label_first, orig_op, dest_op, line_number);
-	strcpy(orig_op, trim(orig_op));
-	strcpy(dest_op, trim(dest_op));
+    split_operands(line, is_label_first, orig_op, dest_op, line_number);
+    strcpy(orig_op, trim(orig_op));
+    strcpy(dest_op, trim(dest_op));
 
-	get_addresing_method(orig_op, orig_info, line_number);
-	get_addresing_method(dest_op, dest_info, line_number);
+    get_addresing_method(orig_op, orig_info, line_number);
+    get_addresing_method(dest_op, dest_info, line_number);
 
-	if (!(orig_info -> addressing_method == DIRECT || orig_info -> addressing_method == INDEX))
-		orig_op[0] = '\0';
-	if (!(dest_info -> addressing_method == DIRECT || dest_info -> addressing_method == INDEX))
-		dest_op[0] = '\0';
+    if (!(orig_info->addressing_method == DIRECT || orig_info->addressing_method == INDEX))
+        orig_op[0] = '\0';
+    if (!(dest_info->addressing_method == DIRECT || dest_info->addressing_method == INDEX))
+        dest_op[0] = '\0';
 
-	if (orig_info -> addressing_method == INDEX)
-	{
-		for (; orig_op[i] != '['; i++);
-		orig_op[i] = '\0';
-	}
+    if (orig_info->addressing_method == INDEX)
+    {
+        for (; orig_op[i] != '['; i++)
+            ;
+        orig_op[i] = '\0';
+    }
 
-	if (dest_info -> addressing_method == INDEX)
-	{
-		for (; dest_op[i] != '['; i++);
-		dest_op[i] = '\0';
-	}
-	free(orig_info);
-	free(dest_info);
+    if (dest_info->addressing_method == INDEX)
+    {
+        for (; dest_op[i] != '['; i++)
+            ;
+        dest_op[i] = '\0';
+    }
+    free(orig_info);
+    free(dest_info);
 }
 
 void clean_info(OpperandInfo *info)
 {
-	info->return_to_me = false;
-	info->reg_num = 0;
-	info->addressing_method = 0;
-	info->additional_first_word = 0;
-	info->additional_second_word = 0;
+    info->return_to_me = false;
+    info->reg_num = 0;
+    info->addressing_method = 0;
+    info->additional_first_word = 0;
+    info->additional_second_word = 0;
 }
