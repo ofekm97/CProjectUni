@@ -4,6 +4,7 @@
 bool first_move(char* file_name)
 {
 	FILE* inputf = NULL;
+	FILE* output = NULL;
 	Symbol* s = NULL;
 	Symbol* symbol_table = NULL;
 	Method* methods_list = NULL;
@@ -192,13 +193,23 @@ bool first_move(char* file_name)
 		}
 
 		fix_symbol_table(symbol_table, ic); /* add the IC to the address of data symbols */
-		
-		printf("dc: %d, ic: %d\n", dc, ic);
+
+		if (ic + dc > MEMORY_SPACE)
+		{
+			printf("Error: There is not enough space in the imaginary computer memory for this program\n");
+			error_flag = true;
+		}
 	}
-	print_words_list(code_img);
-	print_words_list(data_img);
+
 	if (!error_flag)
-		return second_move(inputf, symbol_table, cut_am(file_name), returnTo);
+	{		
+		second_move(inputf, symbol_table, cut_am(file_name), returnTo);
+
+		cut_end(file_name);
+		output = fopen(strcat(file_name, ".ob"), "a");
+		write_all_words_to_file(output, data_img, write_all_words_to_file(output, code_img, BASE_ADDRESS));
+		return true;
+	}
 
 	printf("error in first move\n");
 	return false;

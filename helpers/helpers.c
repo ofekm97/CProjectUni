@@ -258,6 +258,16 @@ char* cut_am(char* str)
 	return str;
 }
 
+void cut_end(char* str)
+{
+	int i = 0;
+
+	while (str[i] != '.')
+		i++;
+
+	str[i] = '\0';
+}
+
 /* get a line and return the name of the method in the line (can be illegal method name). is_label_first is true if the beginning of the line is a label definition */
 void get_method_name(char* line, bool is_label_first, char* method_name)
 {

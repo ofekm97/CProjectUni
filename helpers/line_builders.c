@@ -72,17 +72,24 @@ void write_word_to_file(FILE *output, Word *word)
 {
     char hex_value[HEX_STRING_LENGTH];
     convert_words_to_hex_line(word, hex_value);
-    fprintf(output, "%s", hex_value);
+    fprintf(output, "%s\n", hex_value);
 }
 
-void write_all_words_to_file(FILE *output, WordsList *words_list)
+int write_all_words_to_file(FILE *output, WordsList *words_list, int word_num)
 {
     Word *current = words_list->words;
+    
     while (current)
     {
+	if (word_num < 1000)
+		fprintf(output, "0");
+	fprintf(output, "%d ", word_num);
+	word_num++;
+
         write_word_to_file(output, current);
         current = current->next;
     }
+    return word_num;
 }
 
 int get_base_and_offset(int address, int *base, int *offset)

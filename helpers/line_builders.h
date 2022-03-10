@@ -66,7 +66,7 @@ typedef struct WordsToReturnToList
     WordToReturnTo *first;
 } WordsToReturnToList;
 
-void write_all_words_to_file(FILE *output, WordsList *words_list);
+int write_all_words_to_file(FILE *output, WordsList *words_list, int word_num);
 
 int get_base_and_offset(int address, int *base, int *offset);
 
@@ -88,4 +88,5 @@ bool create_word_to_return_to(WordsToReturnToList *words_to_return_to_list, Word
 
 /* Debuging and Shit */
 void print_words_list(WordsList *words_list);
+
 void print_return_to_words_list(WordsToReturnToList *words_list);

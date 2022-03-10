@@ -10,7 +10,7 @@ mov S1[r11], S2
 mov S2[r10], S3[r9]
  mov S3[r8], r7
 
-S6: .extern S1
+.extern S1
 S6: .string "cdef"
 .data 1,2 ,3 , 4
 			; cmp check

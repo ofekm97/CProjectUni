@@ -101,8 +101,23 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 					{
 						write_to_externals_file(s, file_name, is_first_extern, cur_return_to -> word -> index + BASE_ADDRESS);
 						is_first_extern = false;
+						/* set unknown words */
+						cur_return_to -> word -> A = false;
+						cur_return_to -> word -> E = true;
+						cur_return_to -> word -> next -> A = false;
+						cur_return_to -> word -> next -> E = true;
 					}
-					/* change unknown words */
+
+					else
+					{	/* set unknown words */
+						cur_return_to -> word -> A = false;
+						cur_return_to -> word -> R = true;
+						cur_return_to -> word -> opcode = s -> base_add;
+						cur_return_to -> word -> next -> A = false;
+						cur_return_to -> word -> next -> R = true;
+						cur_return_to -> word -> next -> opcode = s -> offset;
+					}
+
 				}
 
 				if (strcmp(dest_op, "") != 0)
@@ -121,8 +136,24 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 						write_to_externals_file(s, file_name, is_first_extern,
 									 cur_return_to -> word -> index + additional_from_orig_op + BASE_ADDRESS);
 						is_first_extern = false;
+
+						/* set unknown words */
+						cur_return_to -> word -> A = false;
+						cur_return_to -> word -> E = true;
+						cur_return_to -> word -> next -> A = false;
+						cur_return_to -> word -> next -> E = true;
 					}
-					/* change unknown words */
+
+					else
+					{	/* set unknown words */
+						cur_return_to -> word -> A = false;
+						cur_return_to -> word -> R = true;
+						cur_return_to -> word -> opcode = s -> base_add;
+						cur_return_to -> word -> next -> A = false;
+						cur_return_to -> word -> next -> R = true;
+						cur_return_to -> word -> next -> opcode = s -> offset;
+					}
+
 				}
 
 				cur_return_to = cur_return_to -> next;
@@ -156,8 +187,8 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 
 	}	
 
-	if (error_flag == false)
-		print_symbols(symbol_table);
+	if (error_flag == true)
+		printf("error in second move\n");
 
 	return (!error_flag);
 }
