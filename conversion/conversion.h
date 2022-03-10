@@ -19,7 +19,7 @@ int conv_method(char *line, char *method, bool is_label_first, Method *methods_l
 
 int conv_command(char *line, int command_kind, int line_number, WordsList *words_list);
 
-bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToReturnToList *returnTo, int line_number, int *words_added_count);
+bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToReturnToList *returnTo, int line_number, int *words_added_count, bool *returnToWordAdded);
 
 bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo *dest_info, WordsList *words_list, WordsToReturnToList *returnTo, int line_number, int *words_added_count);
 

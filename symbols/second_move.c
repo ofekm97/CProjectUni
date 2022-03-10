@@ -64,7 +64,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 	char c;
 	int additional_from_orig_op;
 	int line_number = 0;
-
+print_return_to_words_list(returnTo);
 	fseek(inputf, 0, SEEK_SET); /* go back to the beginning of the file */
 
 	strcpy(file_name_copy, file_name);

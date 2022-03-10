@@ -265,7 +265,7 @@ bool create_word_to_return_to(WordsToReturnToList *words_to_return_to_list, Word
     if (new_word_to_return_to)
     {
         new_word_to_return_to->word = return_to;
-        new_word_to_return_to->line_numer = line_number;
+        new_word_to_return_to->line_number = line_number;
         new_word_to_return_to->next = NULL;
     }
     else
@@ -280,7 +280,7 @@ bool create_word_to_return_to(WordsToReturnToList *words_to_return_to_list, Word
 void print_word_to_return(WordToReturnTo *current, int index)
 {
    /* printf("printing word %d:\n", index);*/
-    printf("line: %d\n", current->line_numer);
+    printf("line: %d\n", current->line_number);
     /*print_word(current->word);*/
 }
 
