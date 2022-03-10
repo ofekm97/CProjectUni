@@ -52,7 +52,7 @@ bool check_string_format(char *line)
 	return true;
 }
 
-bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToReturnToList *returnTo, int line_number, int *words_added_count, bool *returnToWordAdded)
+bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToReturnToList *returnTo, int line_number, int *words_added_count, bool *return_to_word_added)
 {
 	bool noErrors = true;
 	returnTo = info->return_to_me ? returnTo : NULL;
@@ -70,7 +70,7 @@ bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToRetu
 		return noErrors;
 	}
 	/* this needs to be changed accoding to is external and so.. */
-	noErrors &= create_data_word(words_list, true, false, false, info->additional_first_word, line_number, returnTo, returnToWordAdded);
+	noErrors &= create_data_word(words_list, true, false, false, info->additional_first_word, line_number, returnTo, return_to_word_added);
 	(*words_added_count)++;
 	/* REG_DIRECT is the only one with one additional word */
 	if (info->addressing_method == IMMEDIATE)
@@ -85,7 +85,7 @@ bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToRetu
 bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo *dest_info, WordsList *words_list, WordsToReturnToList *returnTo, int line_number, int *words_added_count)
 {
 	bool noErrors = true;
-	bool returnToWordAdded = false;
+	bool return_to_word_added = false;
 	int orig_addressing_method = orig_info->addressing_method == NO_OPERAND ? 0 : orig_info->addressing_method;
 	int dest_addressing_method = dest_info->addressing_method == NO_OPERAND ? 0 : dest_info->addressing_method;
 	/* add the first word with the opcode */
@@ -106,18 +106,9 @@ bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo 
 								 dest_info->reg_num, dest_addressing_method);
 	(*words_added_count)++;
 	/* add the third word, beacuse labe need to return to it in the future */
-	noErrors &= add_additional_words(orig_info, words_list, returnTo, line_number, words_added_count, &returnToWordAdded);
-	noErrors &= add_additional_words(dest_info, words_list, returnTo, line_number, words_added_count, &returnToWordAdded);
+	noErrors &= add_additional_words(orig_info, words_list, returnTo, line_number, words_added_count, &return_to_word_added);
+	noErrors &= add_additional_words(dest_info, words_list, returnTo, line_number, words_added_count, &return_to_word_added);
 	return noErrors;
-}
-
-void clean_info(OpperandInfo *info)
-{
-	info->return_to_me = false;
-	info->reg_num = 0;
-	info->addressing_method = 0;
-	info->additional_first_word = 0;
-	info->additional_second_word = 0;
 }
 
 int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list, WordsToReturnToList *returnTo)

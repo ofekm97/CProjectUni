@@ -60,3 +60,6 @@ bool get_addresing_method(char *operand,  OpperandInfo *ret_info, int line_numbe
 bool check_operands_number(Method *method, char origin_operand[MAX_LINE_LENGTH+1], char dest_operand[MAX_LINE_LENGTH+1]);
 
 int get_operand_labels(char* line, char* orig_op, char* dest_op, int line_number);
+
+void clean_info(OpperandInfo *info);
+
