@@ -64,7 +64,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 	char c;
 	int additional_from_orig_op;
 	int line_number = 0;
-print_return_to_words_list(returnTo);
+
 	fseek(inputf, 0, SEEK_SET); /* go back to the beginning of the file */
 
 	strcpy(file_name_copy, file_name);
@@ -98,7 +98,7 @@ print_return_to_words_list(returnTo);
 					}
 
 					if (s -> attribute == EXTERNAL)
-					{						/* instead of 0 should be: cur_return_to -> word -> word_num */
+					{	printf("%d\n",cur_return_to -> word -> index);					/* instead of 0 should be: cur_return_to -> word -> word_num */
 						write_to_externals_file(s, file_name, is_first_extern, 0 + 2);
 						is_first_extern = false;
 					}
@@ -123,9 +123,6 @@ print_return_to_words_list(returnTo);
 					}
 					/* change unknown words */
 				}
-
-				if (strcmp(orig_op, "") != 0 && strcmp(dest_op, "")) /* need to change later */
-					cur_return_to = cur_return_to -> next;
 
 				cur_return_to = cur_return_to -> next;
 				continue;
