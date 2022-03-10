@@ -98,8 +98,8 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 					}
 
 					if (s -> attribute == EXTERNAL)
-					{	printf("%d\n",cur_return_to -> word -> index);					/* instead of 0 should be: cur_return_to -> word -> word_num */
-						write_to_externals_file(s, file_name, is_first_extern, 0 + 2);
+					{
+						write_to_externals_file(s, file_name, is_first_extern, cur_return_to -> word -> index + BASE_ADDRESS);
 						is_first_extern = false;
 					}
 					/* change unknown words */
@@ -117,8 +117,9 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 					}
 
 					if (s -> attribute == EXTERNAL)
-					{						/* instead of 0 should be: cur_return_to -> word -> word_num */
-						write_to_externals_file(s, file_name, is_first_extern, 0 + 2 + additional_from_orig_op);
+					{
+						write_to_externals_file(s, file_name, is_first_extern,
+									 cur_return_to -> word -> index + additional_from_orig_op + BASE_ADDRESS);
 						is_first_extern = false;
 					}
 					/* change unknown words */
