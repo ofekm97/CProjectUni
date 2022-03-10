@@ -110,7 +110,7 @@ bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, i
         return false;
     }
     push_to_words_list(words_list, new_word);
-    if (returnTo && !returnToWordAdded)
+    if (returnTo && !(*returnToWordAdded))
     {
         *returnToWordAdded = true;
         return create_word_to_return_to(returnTo, new_word, line_number);
