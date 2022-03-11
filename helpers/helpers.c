@@ -50,7 +50,7 @@ bool get_reg_number(char *reg_name, int* ret_value, int line_number)
     return false;
 }
 
-/* this function copy a string to another without the whitespace chars */
+/* copy string to another without the whitespace chars */
 void clean_whitespace_chars(char* line, char* cleanLine)
 {
 	int i = 0;

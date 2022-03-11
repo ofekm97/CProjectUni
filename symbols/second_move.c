@@ -4,13 +4,13 @@ bool write_to_externals_file(Symbol* symbol, char* file_name, bool is_first_exte
 {
 	FILE* externals_file = NULL;
 
-	if (is_first_extern)
+	if (is_first_extern) /* create the file */
 	{
 		strcat(file_name, ".ext");
 		externals_file = fopen(file_name, "w");
 	}
 
-	else
+	else	/* append to the file */
 		externals_file = fopen(file_name, "a");
 
 	if (externals_file == NULL)
@@ -35,13 +35,13 @@ bool write_to_entries_file(Symbol* symbol, char* file_name, bool is_first_entry)
 {
 	FILE* entries_file = NULL;
 
-	if (is_first_entry)
+	if (is_first_entry)	/* create the file */
 	{
 		strcat(file_name, ".ent");
 		entries_file = fopen(file_name, "w");
 	}
 
-	else
+	else	/* append to the file */
 		entries_file = fopen(file_name, "a");
 
 	if (entries_file == NULL)
@@ -94,6 +94,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 
 		if (cur_return_to != NULL)
 		{
+			/* line with label operand- should push base and offset additional words */
 			if (line_number == cur_return_to -> line_number)
 			{
 				additional_from_orig_op = get_operand_labels(line, orig_op, dest_op, line_number);
@@ -173,6 +174,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 			}
 		}
 
+		/* label define as entry */
 		if (is_command(line, label_name, line_number) == ENTRY_COMMAND)
 		{
 			s = search_symbol(symbol_table, label_name);
@@ -205,6 +207,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 
 	destroy_words_to_return_list(returnTo);
 
+	/* error on second move. should remove ext & ent output files */
 	if (error_flag)
 	{
 		cut_end(file_name);
@@ -213,5 +216,5 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 		remove(strcat(file_name, ".ent"));
 	}
 
-	return (!error_flag);
+	return (!error_flag); /* second move succeeded */
 }

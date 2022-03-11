@@ -218,7 +218,7 @@ bool first_move(char* file_name)
 		if (second_move(inputf, symbol_table, file_name, returnTo)) /* second move succeeded */
 		{
 			cut_end(file_name);
-			outputf = fopen(strcat(file_name, ".ob"), "w");
+			outputf = fopen(strcat(file_name, ".ob"), "w"); /* create object output file */
 			fprintf(outputf, "	%d %d\n", ic - BASE_ADDRESS ,dc);
 			write_all_words_to_file(outputf, data_img, write_all_words_to_file(outputf, code_img, BASE_ADDRESS));
 

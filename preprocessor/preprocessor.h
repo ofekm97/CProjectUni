@@ -7,10 +7,10 @@
 
 #define PREPROCESSOR
 
-void span_macros(char* fileName);
+bool span_macros(char* file_name);
 
-int is_macro_def(char* line, char* name);
+bool is_macro_def(char* line, char* name);
 
-void get_macro_text(char* macroText, FILE* fp1);
+void get_macro_text(char* macro_text, FILE* inputf);
 
 Macro* is_macro_call(Macro* m, char* line);

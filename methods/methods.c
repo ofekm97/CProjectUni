@@ -253,6 +253,7 @@ bool check_operands_number(Method *method, char origin_operand[MAX_LINE_LENGTH +
 
 
 /* return the number of the additional words from the origin operand */
+/* change orig_op and dest_op to string of the operand if its label or empty string if not */
 int get_operand_labels(char* line, char* orig_op, char* dest_op, int line_number) 
 {
 	int i = 0;

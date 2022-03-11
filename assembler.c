@@ -11,11 +11,12 @@ int main(int argc, char* argv[])
 	{
 		strcpy(file_name, argv[i]);
 
-		span_macros(file_name);
+		if(span_macros(file_name))
+		{
+			cut_end(file_name);
+			first_move(strcat(file_name, ".am"));
+		}
 
-		cut_end(file_name);
-
-		first_move(strcat(file_name, ".am"));
 		printf("\n");
 	}
 

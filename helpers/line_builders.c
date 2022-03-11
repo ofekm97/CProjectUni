@@ -133,7 +133,6 @@ bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, i
     }
     else
     {
-        /* should print an error? */
         return false;
     }
     push_to_words_list(words_list, new_word);
@@ -163,7 +162,6 @@ bool create_func_word(WordsList *words_list, bool A, bool R, bool E, short func,
     }
     else
     {
-        /* should print an error? */
         return false;
     }
     push_to_words_list(words_list, new_word);
@@ -180,7 +178,6 @@ WordsList *init_words_list()
     }
     else
     {
-        /* should print an error? */
         return NULL;
     }
     return words_list;
@@ -253,7 +250,6 @@ WordsToReturnToList *init_words_to_return_list()
     }
     else
     {
-        /* should print an error? */
         return NULL;
     }
     return words_to_return;
