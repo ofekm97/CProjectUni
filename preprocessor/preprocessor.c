@@ -67,9 +67,12 @@ void span_macros(char* fileName)
 	
 		while ((c = getc(inputf)) != EOF)
 		{
+			if (c == '\n')
+				continue;
+
 			line[0] = c;
 			fgets(&line[1], MAX_LINE_LENGTH, inputf);
-			
+
 			m = is_macro_call(macrosTable, line);
 		
 			if (m != NULL)

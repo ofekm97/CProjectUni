@@ -1,8 +1,6 @@
 ; error tester for first move
-
 A: .entry	LIST
 B: .extern	W
-
 MAIN:		add	r3, LIST
 MAIN:		prn	#48
  		lead	STR, r6

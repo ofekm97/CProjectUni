@@ -9,7 +9,6 @@ mov S3, r12
 mov S1[r11], S2
 mov S2[r10], S3[r9]
  mov S3[r8], r7
-
 .extern S1
 S6: .string "cdef"
 .data 1,2 ,3 , 4
@@ -30,7 +29,6 @@ S4: cmp r1, #11
 cmp r1, S4
 cmp r1, S5[r2]
 cmp r1, r3
-
 .extern S7
 .entry S4
 yarin: clr r1
@@ -44,7 +42,6 @@ add S3, r12
 add S1[r11], S2
 add S2[r10], S3[r9]
 add S3[r8], r7
-
 ofek: clr r2
 			; add check
 sub #1, r15
@@ -56,11 +53,4 @@ sub S3, r12
 sub S1[r11], S2
 sub S2[r10], S3[r9]
 sub S3[r8], r7
-
 dani: clr r3
-
-
-
-
-
-

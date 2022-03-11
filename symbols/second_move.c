@@ -18,8 +18,14 @@ bool write_to_externals_file(Symbol* symbol, char* file_name, bool is_first_exte
 		printf("Error: cannot open file: %s\n", file_name);
 		return false;
 	}
-								
-	fprintf(externals_file, "%s BASE %d\n%s OFFSET %d\n\n", symbol -> label_name, word_num, symbol -> label_name, word_num + 1);
+	
+	fprintf(externals_file, "%s BASE ", symbol -> label_name);
+	print_pre_zeros(externals_file, word_num);
+	fprintf(externals_file, "%d\n", word_num);
+
+	fprintf(externals_file, "%s OFFSET ", symbol -> label_name);
+	print_pre_zeros(externals_file, word_num + 1);
+	fprintf(externals_file, "%d\n\n", word_num + 1);				
 
 	fclose(externals_file);
 	return true;
@@ -44,7 +50,13 @@ bool write_to_entries_file(Symbol* symbol, char* file_name, bool is_first_entry)
 		return false;
 	}
 	
-	fprintf(entries_file, "%s, %d, %d\n", symbol -> label_name, symbol -> base_add, symbol -> offset);
+	fprintf(entries_file, "%s, ", symbol -> label_name);
+
+	print_pre_zeros(entries_file, symbol -> base_add);
+	fprintf(entries_file, "%d, ", symbol -> base_add);
+
+	print_pre_zeros(entries_file, symbol -> offset);
+	fprintf(entries_file, "%d\n", symbol -> offset);
 
 	fclose(entries_file);
 	return true;
@@ -170,7 +182,11 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 				if (s -> attribute == EXTERNAL)
 				{
 					printf("Line %d- Error: Label \"%s\" define as extern and entry together\n", line_number, label_name);
+					error_flag = true;
 				}
+
+				if (s -> entry == true)
+					continue;
 
 				s -> entry = true;
 				write_to_entries_file(s, file_name_copy, is_first_entry);
@@ -185,10 +201,17 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 	
 		}
 
-	}	
+	}
 
-	if (error_flag == true)
-		printf("error in second move\n");
+	destroy_words_to_return_list(returnTo);
+
+	if (error_flag)
+	{
+		cut_end(file_name);
+		remove(strcat(file_name, ".ext"));
+		cut_end(file_name);
+		remove(strcat(file_name, ".ent"));
+	}
 
 	return (!error_flag);
 }

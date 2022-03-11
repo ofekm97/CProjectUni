@@ -10,8 +10,13 @@ int main(int argc, char* argv[])
 	for (; i < argc; i++)
 	{
 		strcpy(file_name, argv[i]);
+
 		span_macros(file_name);
-		first_move(strcat(cut_as(file_name), ".am"));
+
+		cut_end(file_name);
+
+		first_move(strcat(file_name, ".am"));
+		printf("\n");
 	}
 
 	return 0;

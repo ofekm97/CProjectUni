@@ -1,9 +1,7 @@
 ; error tester for helpers
-
 ; long lineeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 .entry	LIST
 .extern	Waaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
 MAIN:		add	r3, LIST,
 2OOP:		prn	#48
  		lea 	,STR, r6

@@ -1,10 +1,18 @@
 #include "first_move.h"
 
+void clean(WordsList* code_img, WordsList* data_img, Symbol* symbol_table, FILE* inputf)
+{
+	destroy_words_list(code_img);
+	destroy_words_list(data_img);
+	destroy_symbol_table(symbol_table);
+	fclose(inputf);
+}
+
 /* return true if the first move succeeded or false if not */
 bool first_move(char* file_name)
 {
 	FILE* inputf = NULL;
-	FILE* output = NULL;
+	FILE* outputf = NULL;
 	Symbol* s = NULL;
 	Symbol* symbol_table = NULL;
 	Method* methods_list = NULL;
@@ -201,16 +209,28 @@ bool first_move(char* file_name)
 		}
 	}
 
-	if (!error_flag)
-	{		
-		second_move(inputf, symbol_table, cut_am(file_name), returnTo);
+	destroy_methods_list(methods_list);
 
+	if (!error_flag) /* first move succeeded */
+	{
 		cut_end(file_name);
-		output = fopen(strcat(file_name, ".ob"), "a");
-		write_all_words_to_file(output, data_img, write_all_words_to_file(output, code_img, BASE_ADDRESS));
-		return true;
+
+		if (second_move(inputf, symbol_table, file_name, returnTo)) /* second move succeeded */
+		{
+			cut_end(file_name);
+			outputf = fopen(strcat(file_name, ".ob"), "w");
+			fprintf(outputf, "	%d %d\n", ic - BASE_ADDRESS ,dc);
+			write_all_words_to_file(outputf, data_img, write_all_words_to_file(outputf, code_img, BASE_ADDRESS));
+
+			clean(code_img, data_img, symbol_table, inputf); /* free memory and close file*/
+			fclose(outputf);
+			return true;
+		}
+
+		clean(code_img, data_img, symbol_table, inputf);
+		return false;
 	}
 
-	printf("error in first move\n");
+	clean(code_img, data_img, symbol_table, inputf);
 	return false;
 }

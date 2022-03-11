@@ -68,6 +68,27 @@ void convert_words_to_hex_line(Word *word, char hex_value[HEX_STRING_LENGTH])
     convert_int_to_hex_line(word_value, hex_value);
 }
 
+void print_pre_zeros(FILE* file, int word_num)
+{
+	if (word_num < 10)
+	{
+		fprintf(file, "000");
+		return;
+	}
+
+	if (word_num < 100)
+	{
+		fprintf(file, "00");
+		return;
+	}
+
+	if (word_num < 1000)
+	{
+		fprintf(file, "0");
+		return;
+	}
+}
+
 void write_word_to_file(FILE *output, Word *word)
 {
     char hex_value[HEX_STRING_LENGTH];
@@ -81,8 +102,7 @@ int write_all_words_to_file(FILE *output, WordsList *words_list, int word_num)
     
     while (current)
     {
-	if (word_num < 1000)
-		fprintf(output, "0");
+	print_pre_zeros(output, word_num);
 	fprintf(output, "%d ", word_num);
 	word_num++;
 

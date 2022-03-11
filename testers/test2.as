@@ -59,7 +59,3 @@ sub S3[r8], r7
 
 dani: clr r3
 
-
-
-
-

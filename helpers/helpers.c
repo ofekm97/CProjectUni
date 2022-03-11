@@ -232,32 +232,6 @@ bool is_empty(char* line)
 	return (strcmp(line, "") == 0);
 }
 
-char* cut_as(char* str)
-{
-	int i = 0;
-
-	while (str[i] != '\0')
-	{
-		if (strcmp(&str[i], ".as") == 0)
-			str[i] = '\0';
-		i++;
-	}
-	return str;
-}
-
-char* cut_am(char* str)
-{
-	int i = 0;
-
-	while (str[i] != '\0')
-	{
-		if (strcmp(&str[i], ".am") == 0)
-			str[i] = '\0';
-		i++;
-	}
-	return str;
-}
-
 void cut_end(char* str)
 {
 	int i = 0;
