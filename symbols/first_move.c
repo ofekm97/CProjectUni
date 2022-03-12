@@ -95,8 +95,17 @@ bool first_move(char* file_name)
 					case EXTERN_COMMAND:
 
 						printf("Line %d- Warning: A label was defined before external command. Ignore the label.\n",line_number);
+						
+						s = search_symbol(symbol_table, label);
 
-						symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
+						if (s == NULL) /* new symbol */
+							symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
+						else
+						{
+							printf("Line %d- Error: Label \"%s\" has already defined\n",line_number, label);
+							error_flag = true;
+						}
+							
 						break;
 
 					case ENTRY_COMMAND:
@@ -168,7 +177,16 @@ bool first_move(char* file_name)
 							continue;
 						}
 
-						symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
+						s = search_symbol(symbol_table, label);
+
+						if (s == NULL) /* new symbol */
+							symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
+						else
+						{
+							printf("Line %d- Error: Label \"%s\" has already defined\n",line_number, label);
+							error_flag = true;
+						}
+							
 						break;
 
 					case ENTRY_COMMAND:	     /* label define as entry */

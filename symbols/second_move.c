@@ -107,6 +107,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 					{
 						printf("Line %d- Error: Undefined label \"%s\" was used\n", line_number, orig_op);
 						error_flag = true;
+						cur_return_to = cur_return_to -> next;
 						continue;
 					}
 
@@ -141,6 +142,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 					{
 						printf("Line %d- Error: Undefined label \"%s\" was used\n", line_number, dest_op);
 						error_flag = true;
+						cur_return_to = cur_return_to -> next;
 						continue;
 					}
 
