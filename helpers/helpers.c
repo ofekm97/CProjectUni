@@ -137,7 +137,7 @@ int is_label_def(char* line, char* label_name, int line_number)
 
 /* return 1-4 if this is a command sentence, 0 if not and -1 if there is an error in the command name.
    if its external or entry command, put the label name in "label_name" */
-int is_command(char* line, char* label_name, int line_number)
+int is_command(char* line, char* label_name, int line_number, bool first_move)
 {
 	int i = 0, j = 0;
 	
@@ -168,7 +168,8 @@ int is_command(char* line, char* label_name, int line_number)
 		{
 			if (j >= MAX_LABEL_LENGTH)
 			{
-				printf("Line %d- Error: label name is too long\n", line_number);
+				if (first_move)
+					printf("Line %d- Error: label name is too long\n", line_number);
 				return -1;
 			}
 
@@ -180,8 +181,8 @@ int is_command(char* line, char* label_name, int line_number)
 		
 		if (isupper(label_name[0]) || islower(label_name[0]))
 			return EXTERN_COMMAND;
-
-		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
+		if (first_move)
+			printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
 		return -1;
 	}
 
@@ -197,7 +198,8 @@ int is_command(char* line, char* label_name, int line_number)
 		{
 			if (j >= MAX_LABEL_LENGTH)
 			{
-				printf("Line %d- Error: label name is too long\n", line_number);
+				if (first_move)
+					printf("Line %d- Error: label name is too long\n", line_number);
 				return -1;
 			}
 
@@ -209,12 +211,13 @@ int is_command(char* line, char* label_name, int line_number)
 		
 		if (isupper(label_name[0]) || islower(label_name[0]))
 			return ENTRY_COMMAND;
-
-		printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
+		if (first_move)
+			printf("Line %d- Error: A label name must begin with an alphabetic character\n", line_number);
 		return -1;
 	}
 
-	printf("Line %d- Error: Command name is not exist\n", line_number);
+	if (first_move)
+		printf("Line %d- Error: Command name is not exist\n", line_number);
 	return -1;
 }
 

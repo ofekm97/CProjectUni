@@ -177,7 +177,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 		}
 
 		/* label define as entry */
-		if (is_command(line, label_name, line_number) == ENTRY_COMMAND)
+		if (is_command(line, label_name, line_number, false) == ENTRY_COMMAND)
 		{
 			s = search_symbol(symbol_table, label_name);
 
@@ -218,5 +218,5 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 		remove(strcat(file_name, ".ent"));
 	}
 
-	return (!error_flag); /* second move succeeded */
+	return (!error_flag); /* return true if second move succeeded */
 }
