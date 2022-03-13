@@ -13,7 +13,7 @@ bool get_number_from_data_command(char *str, int *value)
 	for (; isspace(str[i]) != 0; i++)
 		;
 
-	if (str[i] == '-')
+	if (str[i] == '-' || str[i] == '+')
 		i++;
 
 	for (; '0' <= str[i] && str[i] <= '9'; i++)
