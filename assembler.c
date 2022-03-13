@@ -3,11 +3,22 @@
 #include "symbols/second_move.h"
 
 int main(int argc, char* argv[])
-{	
-	Symbol* symbol_table = NULL;
+{
+	int i = 1;
+	char file_name[MAX_FILE_NAME_LENGTH];
 
-	span_macros(argv[1]);
-	first_move(strcat(cut_as(argv[1]), ".am"));
+	for (; i < argc; i++)
+	{
+		strcpy(file_name, argv[i]);
+
+		if(span_macros(file_name))
+		{
+			cut_end(file_name);
+			first_move(strcat(file_name, ".am"));
+		}
+
+		printf("\n");
+	}
 
 	return 0;
 }

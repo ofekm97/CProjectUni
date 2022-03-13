@@ -46,11 +46,11 @@ bool get_reg_number(char *reg_name, int* ret_value, int line_number)
             return true;
     }
  
-    printf("Line %d- Error: Register number is not exist\n", line_number);
+    printf("Line %d- Error: Register is not exist\n", line_number);
     return false;
 }
 
-/* this function copy a string to another without the whitespace chars */
+/* copy string to another without the whitespace chars */
 void clean_whitespace_chars(char* line, char* cleanLine)
 {
 	int i = 0;
@@ -232,30 +232,14 @@ bool is_empty(char* line)
 	return (strcmp(line, "") == 0);
 }
 
-char* cut_as(char* str)
+void cut_end(char* str)
 {
 	int i = 0;
 
-	while (str[i] != '\0')
-	{
-		if (strcmp(&str[i], ".as") == 0)
-			str[i] = '\0';
+	while (str[i] != '.')
 		i++;
-	}
-	return str;
-}
 
-char* cut_am(char* str)
-{
-	int i = 0;
-
-	while (str[i] != '\0')
-	{
-		if (strcmp(&str[i], ".am") == 0)
-			str[i] = '\0';
-		i++;
-	}
-	return str;
+	str[i] = '\0';
 }
 
 /* get a line and return the name of the method in the line (can be illegal method name). is_label_first is true if the beginning of the line is a label definition */
@@ -264,9 +248,12 @@ void get_method_name(char* line, bool is_label_first, char* method_name)
 	int i = 0, j = 0;
 
 	if (is_label_first)
+	{
 		for (; line[i] != ':'; i++);
+		i++;
+	}
 	
-	for (i++; isspace(line[i]); i++);
+	for (; isspace(line[i]); i++);
 
 	while (isspace(line[i]) == 0 && line[i] != '\0')
 	{

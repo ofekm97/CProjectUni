@@ -3,12 +3,9 @@
 #endif
 
 typedef struct Macro{
-
-	char macroName[MAX_MACRO_NAME_LENGTH];
-	
-	char macroText[6 * MAX_LINE_LENGTH];
-
-	struct Macro* nextMacro;
+	char macro_name[MAX_MACRO_NAME_LENGTH];
+	char macro_text[6 * MAX_LINE_LENGTH];
+	struct Macro* next_macro;
 
 } Macro;
 

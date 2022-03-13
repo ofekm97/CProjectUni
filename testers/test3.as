@@ -1,1 +1,0 @@
-		lea 	STR, r6

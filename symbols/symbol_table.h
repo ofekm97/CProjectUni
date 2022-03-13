@@ -11,19 +11,12 @@
 
 typedef struct Symbol
 {
-
 	char label_name[MAX_LABEL_LENGTH];
-
 	int value;
-
 	int base_add;
-
 	int offset;
-
 	short attribute; /* CODE, DATA or EXTERNAL */
-
 	bool entry;
-
 	struct Symbol *next;
 
 } Symbol;

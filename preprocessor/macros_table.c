@@ -7,9 +7,9 @@ Macro* new_macro(char* name, char* text)
 	tmp = (Macro*) malloc(sizeof(Macro));
 	if (tmp != NULL)
 	{
-		strcpy(tmp -> macroName, name);
-		strcpy(tmp -> macroText, text);
-		tmp -> nextMacro = NULL;
+		strcpy(tmp -> macro_name, name);
+		strcpy(tmp -> macro_text, text);
+		tmp -> next_macro = NULL;
 	}
 
 	return tmp;
@@ -23,13 +23,13 @@ Macro* insert_macro(Macro* m, char* name, char* text)
 		return new_macro(name, text);
 	}
 
-	if(m -> nextMacro == NULL)
+	if(m -> next_macro == NULL)
 	{
-		m -> nextMacro = new_macro(name, text);
+		m -> next_macro = new_macro(name, text);
 		return m;
 	}
 
-	insert_macro(m -> nextMacro, name, text);
+	insert_macro(m -> next_macro, name, text);
 	return m;
 }
 
@@ -41,14 +41,14 @@ Macro* is_macro_name(Macro* m, char* str)
 		return NULL;
 	}
 	
-	if (strcmp(m -> macroName, str) == 0)
+	if (strcmp(m -> macro_name, str) == 0)
 	{
 		return m;
 	}
 
 	else
 	{
-		return is_macro_name(m -> nextMacro, str);
+		return is_macro_name(m -> next_macro, str);
 	}
 }
 
@@ -60,7 +60,7 @@ void destroy_macro_table(Macro* m)
 		return;
 	}
 
-	destroy_macro_table(m -> nextMacro);
+	destroy_macro_table(m -> next_macro);
 	free(m);
 }
 

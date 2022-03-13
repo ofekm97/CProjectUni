@@ -72,17 +72,22 @@ void write_word_to_file(FILE *output, Word *word)
 {
     char hex_value[HEX_STRING_LENGTH];
     convert_words_to_hex_line(word, hex_value);
-    fprintf(output, "%s", hex_value);
+    fprintf(output, "%s\n", hex_value);
 }
 
-void write_all_words_to_file(FILE *output, WordsList *words_list)
+int write_all_words_to_file(FILE *output, WordsList *words_list, int word_num)
 {
     Word *current = words_list->words;
+    
     while (current)
     {
+        fprintf(output, "%04d ", word_num);
+        word_num++;
+
         write_word_to_file(output, current);
         current = current->next;
     }
+    return word_num;
 }
 
 int get_base_and_offset(int address, int *base, int *offset)
@@ -106,7 +111,6 @@ bool create_data_word(WordsList *words_list, bool A, bool R, bool E, int data, i
     }
     else
     {
-        /* should print an error? */
         return false;
     }
     push_to_words_list(words_list, new_word);
@@ -136,7 +140,6 @@ bool create_func_word(WordsList *words_list, bool A, bool R, bool E, short func,
     }
     else
     {
-        /* should print an error? */
         return false;
     }
     push_to_words_list(words_list, new_word);
@@ -153,7 +156,6 @@ WordsList *init_words_list()
     }
     else
     {
-        /* should print an error? */
         return NULL;
     }
     return words_list;
@@ -226,7 +228,6 @@ WordsToReturnToList *init_words_to_return_list()
     }
     else
     {
-        /* should print an error? */
         return NULL;
     }
     return words_to_return;

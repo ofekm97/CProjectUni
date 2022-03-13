@@ -71,7 +71,7 @@ int method_index(Method *command_list, char *word)
     for (; i < AMOUNT_OF_METHODS; i++)
     {
         current = command_list[i];
-        if (memcmp(word, current.name, current.name_size - 1) == 0)
+        if (memcmp(word, current.name, current.name_size) == 0)
         {
             last_char = *(word + current.name_size);
             if (isspace(last_char) || last_char == '\0')
@@ -123,6 +123,26 @@ bool is_valid_addressing(Method *method, Addressing_Methods operand_type, bool i
     return (bool)(is_source ? (method->src_addressing_method & bit_wise_addressing) : (method->dest_addressing_method & bit_wise_addressing));
 }
 
+bool check_index(char* str)
+{
+	int i = 0;
+
+	if (str[0] != 'r')
+		return false;
+
+	for (; str[i] != ']'; i++)
+	{
+		if (str[i] == '\0')
+			return false;
+	}
+	if (i != 3)
+		return false;
+	if (str[i + 1] != '\0')
+		return false;
+
+	return true;
+}
+
 bool get_index_or_direct_addressing(char *operand, OpperandInfo *ret_info, int line_number)
 {
     int braces_index = 0, reg_number = -1;
@@ -139,6 +159,12 @@ bool get_index_or_direct_addressing(char *operand, OpperandInfo *ret_info, int l
 
     if ((*temp))
     {
+	    if (!check_index(temp + 1))
+        {
+            printf("Line %d- Error: Index format is unvalid\n", line_number);
+            return false;
+        }
+
         memcpy(reg, temp + 1, 3);
         reg[3] = '\0';
 
@@ -152,11 +178,8 @@ bool get_index_or_direct_addressing(char *operand, OpperandInfo *ret_info, int l
                 ret_info->return_to_me = true;
                 return true;
             }
-            else
-            {
-                return false;
-            }
         }
+	    return false;
     }
     else
     {
@@ -223,45 +246,51 @@ bool check_operands_number(Method *method, char origin_operand[MAX_LINE_LENGTH +
     return noErrors;
 }
 
-void get_operand_labels(char *line, char *orig_op, char *dest_op, int line_number)
+
+/* return the number of the additional words from the origin operand */
+/* change orig_op and dest_op to string of the operand if its label or empty string if not */
+int get_operand_labels(char* line, char* orig_op, char* dest_op, int line_number) 
 {
-    int i = 0;
-    bool is_label_first;
-    char label_name[MAX_LABEL_LENGTH];
-    OpperandInfo *orig_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
-    OpperandInfo *dest_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
-    clean_info(orig_info);
-    clean_info(dest_info);
+	int i = 0;
+	bool is_label_first;
+	char label_name[MAX_LABEL_LENGTH];
+	int additional_words = 2;
+	OpperandInfo *orig_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
+	OpperandInfo *dest_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
+	clean_info(orig_info);
+	clean_info(dest_info);
 
-    is_label_first = is_label_def(line, label_name, line_number);
+	is_label_first = is_label_def(line, label_name, line_number);
 
-    split_operands(line, is_label_first, orig_op, dest_op, line_number);
-    strcpy(orig_op, trim(orig_op));
-    strcpy(dest_op, trim(dest_op));
+	split_operands(line, is_label_first, orig_op, dest_op, line_number);
+	strcpy(orig_op, trim(orig_op));
+	strcpy(dest_op, trim(dest_op));
 
-    get_addresing_method(orig_op, orig_info, line_number);
-    get_addresing_method(dest_op, dest_info, line_number);
+	get_addresing_method(orig_op, orig_info, line_number);
+	get_addresing_method(dest_op, dest_info, line_number);
 
-    if (!(orig_info->addressing_method == DIRECT || orig_info->addressing_method == INDEX))
-        orig_op[0] = '\0';
-    if (!(dest_info->addressing_method == DIRECT || dest_info->addressing_method == INDEX))
-        dest_op[0] = '\0';
+	if (!(orig_info -> addressing_method == DIRECT || orig_info -> addressing_method == INDEX))
+	{	
+		orig_op[0] = '\0';
+		additional_words = 0;
+	}
+	if (!(dest_info -> addressing_method == DIRECT || dest_info -> addressing_method == INDEX))
+		dest_op[0] = '\0';
 
-    if (orig_info->addressing_method == INDEX)
-    {
-        for (; orig_op[i] != '['; i++)
-            ;
-        orig_op[i] = '\0';
-    }
+	if (orig_info -> addressing_method == INDEX)
+	{
+		for (; orig_op[i] != '['; i++);
+		orig_op[i] = '\0';
+	}
 
-    if (dest_info->addressing_method == INDEX)
-    {
-        for (; dest_op[i] != '['; i++)
-            ;
-        dest_op[i] = '\0';
-    }
-    free(orig_info);
-    free(dest_info);
+	if (dest_info -> addressing_method == INDEX)
+	{
+		for (; dest_op[i] != '['; i++);
+		dest_op[i] = '\0';
+	}
+	free(orig_info);
+	free(dest_info);
+	return additional_words;
 }
 
 void clean_info(OpperandInfo *info)

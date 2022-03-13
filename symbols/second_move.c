@@ -1,16 +1,16 @@
 #include "second_move.h"
 
-bool write_to_externals_file(Symbol* symbol, char* file_name, bool is_first_extern)
+bool write_to_externals_file(Symbol* symbol, char* file_name, bool is_first_extern, int word_num)
 {
 	FILE* externals_file = NULL;
 
-	if (is_first_extern)
+	if (is_first_extern) /* create the file */
 	{
 		strcat(file_name, ".ext");
 		externals_file = fopen(file_name, "w");
 	}
 
-	else
+	else	/* append to the file */
 		externals_file = fopen(file_name, "a");
 
 	if (externals_file == NULL)
@@ -18,8 +18,12 @@ bool write_to_externals_file(Symbol* symbol, char* file_name, bool is_first_exte
 		printf("Error: cannot open file: %s\n", file_name);
 		return false;
 	}
-										/* instead of 0 should be ic */
-	fprintf(externals_file, "%s BASE %d\n%s OFFSET %d\n\n", symbol -> label_name, 0, symbol -> label_name, 0 + 1);
+	
+	fprintf(externals_file, "%s BASE ", symbol -> label_name);
+	fprintf(externals_file, "%04d\n", word_num);
+
+	fprintf(externals_file, "%s OFFSET ", symbol -> label_name);
+	fprintf(externals_file, "%04d\n\n", word_num + 1);				
 
 	fclose(externals_file);
 	return true;
@@ -29,13 +33,13 @@ bool write_to_entries_file(Symbol* symbol, char* file_name, bool is_first_entry)
 {
 	FILE* entries_file = NULL;
 
-	if (is_first_entry)
+	if (is_first_entry)	/* create the file */
 	{
 		strcat(file_name, ".ent");
 		entries_file = fopen(file_name, "w");
 	}
 
-	else
+	else	/* append to the file */
 		entries_file = fopen(file_name, "a");
 
 	if (entries_file == NULL)
@@ -44,10 +48,18 @@ bool write_to_entries_file(Symbol* symbol, char* file_name, bool is_first_entry)
 		return false;
 	}
 	
-	fprintf(entries_file, "%s, %d, %d\n", symbol -> label_name, symbol -> base_add, symbol -> offset);
+	fprintf(entries_file, "%s, ", symbol -> label_name);
+	fprintf(entries_file, "%04d, ", symbol -> base_add);
+	fprintf(entries_file, "%04d\n", symbol -> offset);
 
 	fclose(entries_file);
 	return true;
+}
+
+void set_ARE(Word *word, bool A, bool R, bool E) {
+	word -> A = A;
+	word -> R = R;
+	word -> E = E;
 }
 
 bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToReturnToList* returnTo)
@@ -62,6 +74,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 	char orig_op[MAX_LINE_LENGTH + 1], dest_op[MAX_LINE_LENGTH + 1];
 	char file_name_copy[MAX_FILE_NAME_LENGTH];
 	char c;
+	int additional_from_orig_op;
 	int line_number = 0;
 
 	fseek(inputf, 0, SEEK_SET); /* go back to the beginning of the file */
@@ -81,9 +94,10 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 
 		if (cur_return_to != NULL)
 		{
+			/* line with label operand- should push base and offset additional words */
 			if (line_number == cur_return_to -> line_number)
-			{ 
-				get_operand_labels(line, orig_op, dest_op, line_number);
+			{
+				additional_from_orig_op = get_operand_labels(line, orig_op, dest_op, line_number);
 
 				if (strcmp(orig_op, "") != 0)
 				{
@@ -97,11 +111,26 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 					}
 
 					if (s -> attribute == EXTERNAL)
-					{	
-						write_to_externals_file(s, file_name, is_first_extern);
+					{
+						write_to_externals_file(s, file_name, is_first_extern, cur_return_to -> word -> index + BASE_ADDRESS);
 						is_first_extern = false;
+						/* set unknown words */
+						set_ARE(cur_return_to->word, false, false, true);
+						cur_return_to -> word -> opcode = 0;
+						/* each `return to word` point to the first out of 2 */
+						set_ARE(cur_return_to->word->next, false, false, true);
+						cur_return_to -> word -> next -> opcode = 0;
 					}
-					/* change unknown words */
+
+					else
+					{	/* set unknown words */
+						set_ARE(cur_return_to->word, false, true, false);
+						cur_return_to -> word -> opcode = s -> base_add;
+						/* each `return to word` point to the first out of 2 */
+						set_ARE(cur_return_to->word->next, false, true, false);
+						cur_return_to -> word -> next -> opcode = s -> offset;
+					}
+
 				}
 
 				if (strcmp(dest_op, "") != 0)
@@ -117,10 +146,25 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 
 					if (s -> attribute == EXTERNAL)
 					{
-						write_to_externals_file(s, file_name, is_first_extern);
+						write_to_externals_file(s, file_name, is_first_extern,
+									 cur_return_to -> word -> index + additional_from_orig_op + BASE_ADDRESS);
 						is_first_extern = false;
+
+						/* set unknown words */
+						set_ARE(cur_return_to->word, false, false, true);
+						cur_return_to->word->opcode = 0;
+						set_ARE(cur_return_to->word->next, false, false, true);
+						cur_return_to->word->next->opcode = 0;
 					}
-					/* change unknown words */
+
+					else
+					{	/* set unknown words */
+						set_ARE(cur_return_to->word, false, true, false);
+						cur_return_to -> word -> opcode = s -> base_add;
+						set_ARE(cur_return_to->word->next, false, true, false);
+						cur_return_to -> word -> next -> opcode = s -> offset;
+					}
+
 				}
 
 				cur_return_to = cur_return_to -> next;
@@ -128,12 +172,22 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 			}
 		}
 
+		/* label define as entry */
 		if (is_command(line, label_name, line_number) == ENTRY_COMMAND)
 		{
 			s = search_symbol(symbol_table, label_name);
 
 			if (s != NULL) /* symbol exist */
-			{
+			{	
+				if (s -> attribute == EXTERNAL)
+				{
+					printf("Line %d- Error: Label \"%s\" define as extern and entry together\n", line_number, label_name);
+					error_flag = true;
+				}
+
+				if (s -> entry == true)
+					continue;
+
 				s -> entry = true;
 				write_to_entries_file(s, file_name_copy, is_first_entry);
 				is_first_entry = false;
@@ -147,10 +201,18 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 	
 		}
 
-	}	
+	}
 
-	if (error_flag == false)
-		print_symbols(symbol_table);
+	destroy_words_to_return_list(returnTo);
 
-	return (!error_flag);
+	/* error on second move. should remove ext & ent output files */
+	if (error_flag)
+	{
+		cut_end(file_name);
+		remove(strcat(file_name, ".ext"));
+		cut_end(file_name);
+		remove(strcat(file_name, ".ent"));
+	}
+
+	return (!error_flag); /* second move succeeded */
 }

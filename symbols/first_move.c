@@ -1,9 +1,18 @@
 #include "first_move.h"
 
+void clean(WordsList* code_img, WordsList* data_img, Symbol* symbol_table, FILE* inputf)
+{
+	destroy_words_list(code_img);
+	destroy_words_list(data_img);
+	destroy_symbol_table(symbol_table);
+	fclose(inputf);
+}
+
 /* return true if the first move succeeded or false if not */
 bool first_move(char* file_name)
 {
 	FILE* inputf = NULL;
+	FILE* outputf = NULL;
 	Symbol* s = NULL;
 	Symbol* symbol_table = NULL;
 	Method* methods_list = NULL;
@@ -105,7 +114,7 @@ bool first_move(char* file_name)
 								symbol_table = insert_symbol(symbol_table, label, ic, CODE, false);
 
 								new_words_num = conv_method(line, method_name, true, methods_list, line_number, code_img, returnTo);
-								if (new_words_num < 0)
+								if (new_words_num <= 0)
 									error_flag = true;
 
 								ic += new_words_num;
@@ -171,7 +180,7 @@ bool first_move(char* file_name)
 						if (method_index(methods_list, method_name) != -1) /* method sentence */
 						{
 							new_words_num = conv_method(line, method_name, false, methods_list, line_number, code_img, returnTo);
-							if (new_words_num < 0)
+							if (new_words_num <= 0)
 								error_flag = true;
 
 							ic += new_words_num;
@@ -192,14 +201,36 @@ bool first_move(char* file_name)
 		}
 
 		fix_symbol_table(symbol_table, ic); /* add the IC to the address of data symbols */
-		
-		printf("dc: %d, ic: %d\n", dc, ic);
-	}
-	print_words_list(code_img);
-	print_words_list(data_img);
-	if (!error_flag)
-		return second_move(inputf, symbol_table, cut_am(file_name), returnTo);
 
-	printf("error in first move\n");
+		if (ic + dc > MEMORY_SPACE)
+		{
+			printf("Error: There is not enough space in the imaginary computer memory for this program\n");
+			error_flag = true;
+		}
+	}
+
+	destroy_methods_list(methods_list);
+
+	if (!error_flag) /* first move succeeded */
+	{
+		cut_end(file_name);
+
+		if (second_move(inputf, symbol_table, file_name, returnTo)) /* second move succeeded */
+		{
+			cut_end(file_name);
+			outputf = fopen(strcat(file_name, ".ob"), "w"); /* create object output file */
+			fprintf(outputf, "	%d %d\n", ic - BASE_ADDRESS ,dc);
+			write_all_words_to_file(outputf, data_img, write_all_words_to_file(outputf, code_img, BASE_ADDRESS));
+
+			clean(code_img, data_img, symbol_table, inputf); /* free memory and close file*/
+			fclose(outputf);
+			return true;
+		}
+
+		clean(code_img, data_img, symbol_table, inputf);
+		return false;
+	}
+
+	clean(code_img, data_img, symbol_table, inputf);
 	return false;
 }

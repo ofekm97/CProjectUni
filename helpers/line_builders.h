@@ -66,7 +66,17 @@ typedef struct WordsToReturnToList
     WordToReturnTo *first;
 } WordsToReturnToList;
 
-void write_all_words_to_file(FILE *output, WordsList *words_list);
+int get_ARE(Word *word);
+
+int convert_func_word_to_int(Word *word);
+
+void convert_int_to_hex_line(int line_value, char hex_value[HEX_STRING_LENGTH]);
+
+void convert_words_to_hex_line(Word *word, char hex_value[HEX_STRING_LENGTH]);
+
+void write_word_to_file(FILE *output, Word *word);
+
+int write_all_words_to_file(FILE *output, WordsList *words_list, int word_num);
 
 int get_base_and_offset(int address, int *base, int *offset);
 
@@ -82,10 +92,13 @@ bool create_func_word(WordsList *words_list, bool A, bool R, bool E, short func,
 
 WordsToReturnToList *init_words_to_return_list();
 
+void push_to_words_to_return_list(WordsToReturnToList *words_to_return, WordToReturnTo *new_words_to_return_to);
+
 void destroy_words_to_return_list(WordsToReturnToList *words_to_return_to_list);
 
 bool create_word_to_return_to(WordsToReturnToList *words_to_return_to_list, Word *return_to, int line_number);
 
 /* Debuging and Shit */
 void print_words_list(WordsList *words_list);
+
 void print_return_to_words_list(WordsToReturnToList *words_list);

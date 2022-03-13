@@ -14,3 +14,5 @@
 #define FIRST_MOVE
 
 bool first_move(char *file_name);
+
+void clean(WordsList* code_img, WordsList* data_img, Symbol* symbol_table, FILE* inputf);
