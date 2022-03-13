@@ -156,7 +156,7 @@ bool first_move(char* file_name)
 					case STRING_COMMAND:
 						new_words_num = conv_command(line, 2, line_number, data_img);
 						if (new_words_num < 0)
-							error_flag = true;;
+							error_flag = true;
 
 						dc += new_words_num;
 						break;

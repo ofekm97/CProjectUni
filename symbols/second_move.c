@@ -20,12 +20,10 @@ bool write_to_externals_file(Symbol* symbol, char* file_name, bool is_first_exte
 	}
 	
 	fprintf(externals_file, "%s BASE ", symbol -> label_name);
-	print_pre_zeros(externals_file, word_num);
-	fprintf(externals_file, "%d\n", word_num);
+	fprintf(externals_file, "%04d\n", word_num);
 
 	fprintf(externals_file, "%s OFFSET ", symbol -> label_name);
-	print_pre_zeros(externals_file, word_num + 1);
-	fprintf(externals_file, "%d\n\n", word_num + 1);				
+	fprintf(externals_file, "%04d\n\n", word_num + 1);				
 
 	fclose(externals_file);
 	return true;
@@ -51,15 +49,17 @@ bool write_to_entries_file(Symbol* symbol, char* file_name, bool is_first_entry)
 	}
 	
 	fprintf(entries_file, "%s, ", symbol -> label_name);
-
-	print_pre_zeros(entries_file, symbol -> base_add);
-	fprintf(entries_file, "%d, ", symbol -> base_add);
-
-	print_pre_zeros(entries_file, symbol -> offset);
-	fprintf(entries_file, "%d\n", symbol -> offset);
+	fprintf(entries_file, "%04d, ", symbol -> base_add);
+	fprintf(entries_file, "%04d\n", symbol -> offset);
 
 	fclose(entries_file);
 	return true;
+}
+
+void set_ARE(Word *word, bool A, bool R, bool E) {
+	word -> A = A;
+	word -> R = R;
+	word -> E = E;
 }
 
 bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToReturnToList* returnTo)
@@ -115,19 +115,19 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 						write_to_externals_file(s, file_name, is_first_extern, cur_return_to -> word -> index + BASE_ADDRESS);
 						is_first_extern = false;
 						/* set unknown words */
-						cur_return_to -> word -> A = false;
-						cur_return_to -> word -> E = true;
-						cur_return_to -> word -> next -> A = false;
-						cur_return_to -> word -> next -> E = true;
+						set_ARE(cur_return_to->word, false, false, true);
+						cur_return_to -> word -> opcode = 0;
+						/* each `return to word` point to the first out of 2 */
+						set_ARE(cur_return_to->word->next, false, false, true);
+						cur_return_to -> word -> next -> opcode = 0;
 					}
 
 					else
 					{	/* set unknown words */
-						cur_return_to -> word -> A = false;
-						cur_return_to -> word -> R = true;
+						set_ARE(cur_return_to->word, false, true, false);
 						cur_return_to -> word -> opcode = s -> base_add;
-						cur_return_to -> word -> next -> A = false;
-						cur_return_to -> word -> next -> R = true;
+						/* each `return to word` point to the first out of 2 */
+						set_ARE(cur_return_to->word->next, false, true, false);
 						cur_return_to -> word -> next -> opcode = s -> offset;
 					}
 
@@ -151,19 +151,17 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 						is_first_extern = false;
 
 						/* set unknown words */
-						cur_return_to -> word -> A = false;
-						cur_return_to -> word -> E = true;
-						cur_return_to -> word -> next -> A = false;
-						cur_return_to -> word -> next -> E = true;
+						set_ARE(cur_return_to->word, false, false, true);
+						cur_return_to->word->opcode = 0;
+						set_ARE(cur_return_to->word->next, false, false, true);
+						cur_return_to->word->next->opcode = 0;
 					}
 
 					else
 					{	/* set unknown words */
-						cur_return_to -> word -> A = false;
-						cur_return_to -> word -> R = true;
+						set_ARE(cur_return_to->word, false, true, false);
 						cur_return_to -> word -> opcode = s -> base_add;
-						cur_return_to -> word -> next -> A = false;
-						cur_return_to -> word -> next -> R = true;
+						set_ARE(cur_return_to->word->next, false, true, false);
 						cur_return_to -> word -> next -> opcode = s -> offset;
 					}
 

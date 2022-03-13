@@ -68,12 +68,10 @@ int method_index(Method *command_list, char *word)
         printf("method list is null, returning -1");
         return -1;
     }
-    if (strcmp(word, "sto") == 0)
-	return -1;
     for (; i < AMOUNT_OF_METHODS; i++)
     {
         current = command_list[i];
-        if (memcmp(word, current.name, current.name_size - 1) == 0)
+        if (memcmp(word, current.name, current.name_size) == 0)
         {
             last_char = *(word + current.name_size);
             if (isspace(last_char) || last_char == '\0')
@@ -137,10 +135,8 @@ bool check_index(char* str)
 		if (str[i] == '\0')
 			return false;
 	}
-
-	if (i != 2 && i != 3)
+	if (i != 3)
 		return false;
-
 	if (str[i + 1] != '\0')
 		return false;
 
@@ -163,28 +159,27 @@ bool get_index_or_direct_addressing(char *operand, OpperandInfo *ret_info, int l
 
     if ((*temp))
     {
-	if (!check_index(temp + 1))
-	{
-		printf("Line %d- Error: Index format is unvalid\n", line_number);
-		return false;
-	}
+	    if (!check_index(temp + 1))
+        {
+            printf("Line %d- Error: Index format is unvalid\n", line_number);
+            return false;
+        }
 
         memcpy(reg, temp + 1, 3);
-
-	 if (reg[2] == ']')
-		reg[2] = '\0';
-		
         reg[3] = '\0';
 
         if (get_reg_number(reg, &reg_number, line_number))
         {
+            if (10 <= reg_number || reg_number <= 15)
+            {
                 ret_info->reg_num = reg_number;
                 ret_info->addressing_method = INDEX;
                 ret_info->additional_first_word = 0;
                 ret_info->return_to_me = true;
                 return true;
+            }
         }
-	return false;
+	    return false;
     }
     else
     {

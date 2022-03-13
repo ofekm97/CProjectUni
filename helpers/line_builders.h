@@ -74,8 +74,6 @@ void convert_int_to_hex_line(int line_value, char hex_value[HEX_STRING_LENGTH]);
 
 void convert_words_to_hex_line(Word *word, char hex_value[HEX_STRING_LENGTH]);
 
-void print_pre_zeros(FILE* file, int word_num);
-
 void write_word_to_file(FILE *output, Word *word);
 
 int write_all_words_to_file(FILE *output, WordsList *words_list, int word_num);

@@ -57,10 +57,9 @@ bool add_additional_words(OpperandInfo *info, WordsList *words_list, WordsToRetu
 	bool noErrors = true;
 	returnTo = info->return_to_me ? returnTo : NULL;
 
-
-	if(info->addressing_method == NO_OPERAND)
+	if (info->addressing_method == NO_OPERAND)
 	{
-		info->addressing_method = 0; 
+		info->addressing_method = 0;
 		return true;
 	}
 
@@ -110,6 +109,17 @@ bool handle_operands_info(Method *method, OpperandInfo *orig_info, OpperandInfo 
 	noErrors &= add_additional_words(dest_info, words_list, returnTo, line_number, words_added_count, &return_to_word_added);
 	return noErrors;
 }
+void clean_up(OpperandInfo *orig_info, OpperandInfo *dest_info)
+{
+	if (orig_info)
+	{
+		free(orig_info);
+	}
+	if (dest_info)
+	{
+		free(dest_info);
+	}
+}
 
 int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list, WordsToReturnToList *returnTo)
 {
@@ -124,7 +134,8 @@ int conv_method(char *line, char *method, bool is_label_first, Method *methods_l
 	/* operands format error */
 	if (split_operands(line, is_label_first, orig_op, dest_op, line_number) == false)
 	{
-		goto cleanup;
+		clean_up(orig_info,dest_info);
+		return ret_val;
 	}
 
 	strcpy(orig_op, trim(orig_op)); /* clean whitespaces */
@@ -135,28 +146,29 @@ int conv_method(char *line, char *method, bool is_label_first, Method *methods_l
 	if (!check_operands_number(cur_method, orig_op, dest_op))
 	{
 		printf("Line %d- Error: Number of operands does not match the method type\n", line_number);
-		goto cleanup;
+		clean_up(orig_info,dest_info);
+		return ret_val;
 	}
 
-	if (!get_addresing_method(orig_op, orig_info, line_number))
-		goto cleanup;
+	if (!get_addresing_method(orig_op, orig_info, line_number)) {
+		clean_up(orig_info,dest_info);
+		return ret_val;
+	}
 
-	if (!get_addresing_method(dest_op, dest_info, line_number))
-		goto cleanup;
+	if (!get_addresing_method(dest_op, dest_info, line_number)) {
+		clean_up(orig_info,dest_info);
+		return ret_val;
+	}
 
 	if (!(is_valid_addressing(cur_method, orig_info->addressing_method, true) && is_valid_addressing(cur_method, dest_info->addressing_method, false)))
 	{
 		printf("Line %d- Error: Operand addressing method does not match the method type\n", line_number);
-		goto cleanup;
+		clean_up(orig_info,dest_info);
+		return ret_val;
 	}
 
 	handle_operands_info(cur_method, orig_info, dest_info, words_list, returnTo, line_number, &ret_val);
-
-cleanup:
-	if (orig_info)
-		free(orig_info);
-	if (dest_info)
-		free(dest_info);
+	clean_up(orig_info,dest_info);
 	return ret_val;
 }
 
