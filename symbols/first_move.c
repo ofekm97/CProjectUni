@@ -63,7 +63,7 @@ bool first_move(char* file_name)
 					continue;
 				}
 
-				switch ((command_kind = is_command(line, label, line_number))) /* its command sentence */
+				switch ((command_kind = is_command(line, label, line_number, true))) /* its command sentence */
 				{
 					case -1:
 						error_flag = true;
@@ -95,8 +95,17 @@ bool first_move(char* file_name)
 					case EXTERN_COMMAND:
 
 						printf("Line %d- Warning: A label was defined before external command. Ignore the label.\n",line_number);
+						
+						s = search_symbol(symbol_table, label);
 
-						symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
+						if (s == NULL) /* new symbol */
+							symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
+						else
+						{
+							printf("Line %d- Error: Label \"%s\" has already defined\n",line_number, label);
+							error_flag = true;
+						}
+							
 						break;
 
 					case ENTRY_COMMAND:
@@ -130,7 +139,7 @@ bool first_move(char* file_name)
 
 						else
 						{
-							printf("Line %d- Error: method name is not exist\n", line_number);
+							printf("Line %d- Error: Method name is not exist\n", line_number);
 							error_flag = true;
 						}
 						
@@ -139,7 +148,7 @@ bool first_move(char* file_name)
 
 			else if (label_def == 0)/* no label definition in the beginnig of the line */
 			{
-				switch (is_command(line, label, line_number))
+				switch (is_command(line, label, line_number, true))
 				{
 					case -1:
 						error_flag = true;
@@ -168,7 +177,16 @@ bool first_move(char* file_name)
 							continue;
 						}
 
-						symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
+						s = search_symbol(symbol_table, label);
+
+						if (s == NULL) /* new symbol */
+							symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
+						else
+						{
+							printf("Line %d- Error: Label \"%s\" has already defined\n",line_number, label);
+							error_flag = true;
+						}
+							
 						break;
 
 					case ENTRY_COMMAND:	     /* label define as entry */
@@ -188,7 +206,7 @@ bool first_move(char* file_name)
 						
 						else
 						{
-							printf("Line %d- Error: method name is not exist\n", line_number);
+							printf("Line %d- Error: Method name is not exist\n", line_number);
 							error_flag = true;
 						}
 				}
@@ -211,24 +229,19 @@ bool first_move(char* file_name)
 
 	destroy_methods_list(methods_list);
 
-	if (!error_flag) /* first move succeeded */
+	cut_end(file_name);
+	error_flag = (!second_move(inputf, symbol_table, file_name, returnTo) || error_flag);
+
+	if (!error_flag) /* first and second move succeeded */
 	{
 		cut_end(file_name);
+		outputf = fopen(strcat(file_name, ".ob"), "w"); /* create object output file */
+		fprintf(outputf, "	%d %d\n", ic - BASE_ADDRESS ,dc);
+		write_all_words_to_file(outputf, data_img, write_all_words_to_file(outputf, code_img, BASE_ADDRESS));
 
-		if (second_move(inputf, symbol_table, file_name, returnTo)) /* second move succeeded */
-		{
-			cut_end(file_name);
-			outputf = fopen(strcat(file_name, ".ob"), "w"); /* create object output file */
-			fprintf(outputf, "	%d %d\n", ic - BASE_ADDRESS ,dc);
-			write_all_words_to_file(outputf, data_img, write_all_words_to_file(outputf, code_img, BASE_ADDRESS));
-
-			clean(code_img, data_img, symbol_table, inputf); /* free memory and close file*/
-			fclose(outputf);
-			return true;
-		}
-
-		clean(code_img, data_img, symbol_table, inputf);
-		return false;
+		clean(code_img, data_img, symbol_table, inputf); /* free memory and close file*/
+		fclose(outputf);
+		return true;
 	}
 
 	clean(code_img, data_img, symbol_table, inputf);

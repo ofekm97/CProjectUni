@@ -22,7 +22,7 @@ bool check_lines_size(FILE* file, int max);
 
 void clean_whitespace_chars(char* line, char* cleanLine);
 
-int is_command(char* line, char* ext_label_name, int line_number);
+int is_command(char* line, char* ext_label_name, int line_number, bool first_move);
 
 bool get_reg_number(char* reg_name, int* ret_value, int line_number);
 

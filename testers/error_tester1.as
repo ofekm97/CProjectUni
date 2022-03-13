@@ -27,3 +27,6 @@ LIST: 	       .data	6, -9
 .entry	 K
 K:	       .data	-31
 .extern val1
+a: .extern LIST
+b: .extern	w
+
