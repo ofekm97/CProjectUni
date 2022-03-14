@@ -7,27 +7,27 @@ mov S1, S2
 mov S2, S3[r13]
 mov S3, r12
 mov S1[r11], S2
-mov S2[r10], S3[r9]
- mov S3[r8], r7
+mov S2[r10], S3[r12]
+ mov S3[r12], r7
 .extern S1
 S6: .string "cdef"
 .data 1,2 ,3 , 4
 			; cmp check
 cmp #4, #5
 cmp #6, S4
-cmp #7, S1[r6]
+cmp #7, S1[r15]
 cmp #8, r5
 cmp S5, #9
 cmp S4, S6
-cmp S3, S7[r4]
+cmp S3, S7[r14]
 cmp S2, r3
-cmp S1[r2], #10
-S5: cmp S1[r2], S2
-cmp S1[r2], S3[r1]
-cmp S1[r2], r0
+cmp S1[r12], #10
+S5: cmp S1[r12], S2
+cmp S1[r12], S3[r12]
+cmp S1[r12], r0
 S4: cmp r1, #11
 cmp r1, S4
-cmp r1, S5[r2]
+cmp r1, S5[r12]
 cmp r1, r3
 .extern S7
 .entry S4
@@ -40,8 +40,8 @@ add S1, S2
 add S2, S3[r13]
 add S3, r12
 add S1[r11], S2
-add S2[r10], S3[r9]
-add S3[r8], r7
+add S2[r10], S3[r15]
+add S3[r12], r7
 ofek: clr r2
 			; add check
 sub #1, r15
@@ -51,6 +51,6 @@ sub S1, S2
 sub S2, S3[r13]
 sub S3, r12
 sub S1[r11], S2
-sub S2[r10], S3[r9]
-sub S3[r8], r7
+sub S2[r10], S3[r10]
+sub S3[r15], r7
 dani: clr r3
