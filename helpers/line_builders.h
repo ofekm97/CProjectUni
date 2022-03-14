@@ -99,6 +99,8 @@ void destroy_words_to_return_list(WordsToReturnToList *words_to_return_to_list);
 bool create_word_to_return_to(WordsToReturnToList *words_to_return_to_list, Word *return_to, int line_number);
 
 /* Debuging and Shit */
+void print_word(Word *current);
+
 void print_words_list(WordsList *words_list);
 
 void print_return_to_words_list(WordsToReturnToList *words_list);

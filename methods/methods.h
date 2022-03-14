@@ -63,4 +63,4 @@ bool check_operands_number(Method *method, char origin_operand[MAX_LINE_LENGTH+1
 
 void clean_info(OpperandInfo *info);
 
-int get_operand_labels(char* line, char* orig_op, char* dest_op, int line_number);
+void get_operand_labels(char* line, char* orig_op, char* dest_op, int line_number);

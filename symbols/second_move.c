@@ -74,7 +74,6 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 	char orig_op[MAX_LINE_LENGTH + 1], dest_op[MAX_LINE_LENGTH + 1];
 	char file_name_copy[MAX_FILE_NAME_LENGTH];
 	char c;
-	int additional_from_orig_op;
 	int line_number = 0;
 
 	fseek(inputf, 0, SEEK_SET); /* go back to the beginning of the file */
@@ -97,7 +96,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 			/* line with label operand- should push base and offset additional words */
 			if (line_number == cur_return_to -> line_number)
 			{
-				additional_from_orig_op = get_operand_labels(line, orig_op, dest_op, line_number);
+				get_operand_labels(line, orig_op, dest_op, line_number);
 
 				if (strcmp(orig_op, "") != 0)
 				{
@@ -131,7 +130,8 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 						set_ARE(cur_return_to->word->next, false, true, false);
 						cur_return_to -> word -> next -> opcode = s -> offset;
 					}
-
+					
+					cur_return_to -> word = cur_return_to -> word -> next -> next; /* move to the additional words of dest operand if exists */
 				}
 
 				if (strcmp(dest_op, "") != 0)
@@ -149,7 +149,7 @@ bool second_move(FILE* inputf, Symbol* symbol_table, char* file_name, WordsToRet
 					if (s -> attribute == EXTERNAL)
 					{
 						write_to_externals_file(s, file_name, is_first_extern,
-									 cur_return_to -> word -> index + additional_from_orig_op + BASE_ADDRESS);
+									 cur_return_to -> word -> index + BASE_ADDRESS);
 						is_first_extern = false;
 
 						/* set unknown words */
