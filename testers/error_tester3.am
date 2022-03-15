@@ -1,4 +1,5 @@
 ; error tester for second move
+ 
 .entry	LIST
 .extern	W
 MAIN:		add	r3, LIST1
