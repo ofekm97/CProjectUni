@@ -27,11 +27,11 @@
 #define HEX_11 (3)
 
 /* Word structure
-*
-*   In case of first word should be using opcode
-*   second word the other values
-*   third data (data of additional words) is in opcode (to save space)
-*/
+ *
+ *   In case of first word should be using opcode
+ *   second word the other values
+ *   third data (data of additional words) is in opcode (to save space)
+ */
 typedef struct Word
 {
     bool is_func_word;

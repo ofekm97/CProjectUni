@@ -10,14 +10,12 @@ bool get_number_from_data_command(char *str, int *value)
 		return false;
 	}
 
-	for (; isspace(str[i]) != 0; i++)
-		;
+	for (; isspace(str[i]) != 0; i++);
 
 	if (str[i] == '-' || str[i] == '+')
 		i++;
 
-	for (; '0' <= str[i] && str[i] <= '9'; i++)
-		;
+	for (; '0' <= str[i] && str[i] <= '9'; i++);
 
 	for (; str[i] != ',' && str[i] != '\0'; i++)
 	{
@@ -123,7 +121,8 @@ void clean_up(OpperandInfo *orig_info, OpperandInfo *dest_info)
 
 int conv_method(char *line, char *method, bool is_label_first, Method *methods_list, int line_number, WordsList *words_list, WordsToReturnToList *returnTo)
 {
-	char orig_op[MAX_LINE_LENGTH + 1], dest_op[MAX_LINE_LENGTH + 1];
+	char orig_op_before_trim[MAX_LINE_LENGTH + 1], dest_op_before_trim[MAX_LINE_LENGTH + 1];
+	char *orig_op, *dest_op;
 	int ret_val = 0;
 	Method *cur_method;
 	OpperandInfo *orig_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
@@ -132,43 +131,45 @@ int conv_method(char *line, char *method, bool is_label_first, Method *methods_l
 	clean_info(dest_info);
 
 	/* operands format error */
-	if (split_operands(line, is_label_first, orig_op, dest_op, line_number) == false)
+	if (split_operands(line, is_label_first, orig_op_before_trim, dest_op_before_trim, line_number) == false)
 	{
-		clean_up(orig_info,dest_info);
+		clean_up(orig_info, dest_info);
 		return ret_val;
 	}
 
-	strcpy(orig_op, trim(orig_op)); /* clean whitespaces */
-	strcpy(dest_op, trim(dest_op));
+	orig_op = trim(orig_op_before_trim); /* clean whitespaces */
+	dest_op = trim(dest_op_before_trim);
 
 	cur_method = methods_list + method_index(methods_list, method);
 
 	if (!check_operands_number(cur_method, orig_op, dest_op))
 	{
 		printf("Line %d- Error: Number of operands does not match the method type\n", line_number);
-		clean_up(orig_info,dest_info);
+		clean_up(orig_info, dest_info);
 		return ret_val;
 	}
 
-	if (!get_addresing_method(orig_op, orig_info, line_number)) {
-		clean_up(orig_info,dest_info);
+	if (!get_addresing_method(orig_op, orig_info, line_number))
+	{
+		clean_up(orig_info, dest_info);
 		return ret_val;
 	}
 
-	if (!get_addresing_method(dest_op, dest_info, line_number)) {
-		clean_up(orig_info,dest_info);
+	if (!get_addresing_method(dest_op, dest_info, line_number))
+	{
+		clean_up(orig_info, dest_info);
 		return ret_val;
 	}
 
 	if (!(is_valid_addressing(cur_method, orig_info->addressing_method, true) && is_valid_addressing(cur_method, dest_info->addressing_method, false)))
 	{
 		printf("Line %d- Error: Operand addressing method does not match the method type\n", line_number);
-		clean_up(orig_info,dest_info);
+		clean_up(orig_info, dest_info);
 		return ret_val;
 	}
 
 	handle_operands_info(cur_method, orig_info, dest_info, words_list, returnTo, line_number, &ret_val);
-	clean_up(orig_info,dest_info);
+	clean_up(orig_info, dest_info);
 	return ret_val;
 }
 

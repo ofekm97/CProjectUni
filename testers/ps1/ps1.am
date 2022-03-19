@@ -25,6 +25,7 @@ LOOP:       prn #48
             rts
 .entry MAIN
             sub LOOP[r10] ,r14
+ 
  END: stop
 STR:        .string "abcd**************************"
 LIST:       .data +6, -9
@@ -32,5 +33,7 @@ LIST:       .data +6, -9
 K:          .data 31
  .extern val1
  .entry LIST
+ 
 .entry K
+ 
 .extern W

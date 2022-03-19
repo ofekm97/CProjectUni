@@ -1,4 +1,7 @@
 ;example 2-this is a valid code in assembly.
+ 
+ 
+ 
 mov r4, List
 sub List, r5
 jmp Ex
@@ -12,11 +15,14 @@ prn String
 sub r11, S
 lea List,Main[r13]
 cmp S, Ex
+ 
 ;visibilitys:
 .extern Ex
 .entry E
 .entry S
 .extern out
+ 
+ 
 ; now setting al the labels
 List: .data -6, 4, 82, 11
 String: .string "string"
