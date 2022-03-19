@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 	for (; i < argc; i++)
 	{
 		strcpy(file_name, argv[i]);
+		printf("Working on file %s.as\n", file_name);
 
 		if (span_macros(file_name))
 		{
@@ -17,7 +18,7 @@ int main(int argc, char *argv[])
 			first_move(strcat(file_name, ".am"));
 		}
 
-		printf("\n");
+		printf("Finished with file %s.as\n\n", file_name);
 	}
 
 	return 0;
