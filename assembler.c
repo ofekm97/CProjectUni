@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 			first_move(strcat(file_name, ".am"));
 		}
 
-		printf("Finished with file %s.as\n\n", file_name);
+		printf("Finished with file %s\n\n", file_name);
 	}
 
 	return 0;
