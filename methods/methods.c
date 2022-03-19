@@ -252,6 +252,7 @@ void get_operand_labels(char* line, char* orig_op, char* dest_op, int line_numbe
 	int i = 0;
 	bool is_label_first;
 	char label_name[MAX_LABEL_LENGTH];
+    char temp_orig[MAX_LINE_LENGTH], temp_dest[MAX_LINE_LENGTH];
 	OpperandInfo *orig_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
 	OpperandInfo *dest_info = (OpperandInfo *)malloc(sizeof(OpperandInfo));
 	clean_info(orig_info);
@@ -259,9 +260,9 @@ void get_operand_labels(char* line, char* orig_op, char* dest_op, int line_numbe
 
 	is_label_first = is_label_def(line, label_name, line_number);
 
-	split_operands(line, is_label_first, orig_op, dest_op, line_number);
-	strcpy(orig_op, trim(orig_op));
-	strcpy(dest_op, trim(dest_op));
+	split_operands(line, is_label_first, temp_orig, temp_dest, line_number);
+	strcpy(orig_op, trim(temp_orig));
+	strcpy(dest_op, trim(temp_dest));
 
 	get_addresing_method(orig_op, orig_info, line_number);
 	get_addresing_method(dest_op, dest_info, line_number);
