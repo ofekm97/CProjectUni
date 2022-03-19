@@ -69,7 +69,10 @@ bool span_macros(char *file_name)
 		while ((c = getc(inputf)) != EOF)
 		{
 			if (c == '\n')
+			{
+				fprintf(outputf, " \n");
 				continue;
+			}
 
 			line[0] = c;
 			fgets(&line[1], MAX_LINE_LENGTH, inputf); /* get line */
