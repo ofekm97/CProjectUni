@@ -10,14 +10,12 @@ bool get_number_from_data_command(char *str, int *value)
 		return false;
 	}
 
-	for (; isspace(str[i]) != 0; i++)
-		;
+	for (; isspace(str[i]) != 0; i++);
 
 	if (str[i] == '-' || str[i] == '+')
 		i++;
 
-	for (; '0' <= str[i] && str[i] <= '9'; i++)
-		;
+	for (; '0' <= str[i] && str[i] <= '9'; i++);
 
 	for (; str[i] != ',' && str[i] != '\0'; i++)
 	{
@@ -135,7 +133,7 @@ int conv_method(char *line, char *method, bool is_label_first, Method *methods_l
 	/* operands format error */
 	if (split_operands(line, is_label_first, orig_op_before_trim, dest_op_before_trim, line_number) == false)
 	{
-		clean_up(orig_info,dest_info);
+		clean_up(orig_info, dest_info);
 		return ret_val;
 	}
 
@@ -147,29 +145,31 @@ int conv_method(char *line, char *method, bool is_label_first, Method *methods_l
 	if (!check_operands_number(cur_method, orig_op, dest_op))
 	{
 		printf("Line %d- Error: Number of operands does not match the method type\n", line_number);
-		clean_up(orig_info,dest_info);
+		clean_up(orig_info, dest_info);
 		return ret_val;
 	}
 
-	if (!get_addresing_method(orig_op, orig_info, line_number)) {
-		clean_up(orig_info,dest_info);
+	if (!get_addresing_method(orig_op, orig_info, line_number))
+	{
+		clean_up(orig_info, dest_info);
 		return ret_val;
 	}
 
-	if (!get_addresing_method(dest_op, dest_info, line_number)) {
-		clean_up(orig_info,dest_info);
+	if (!get_addresing_method(dest_op, dest_info, line_number))
+	{
+		clean_up(orig_info, dest_info);
 		return ret_val;
 	}
 
 	if (!(is_valid_addressing(cur_method, orig_info->addressing_method, true) && is_valid_addressing(cur_method, dest_info->addressing_method, false)))
 	{
 		printf("Line %d- Error: Operand addressing method does not match the method type\n", line_number);
-		clean_up(orig_info,dest_info);
+		clean_up(orig_info, dest_info);
 		return ret_val;
 	}
 
 	handle_operands_info(cur_method, orig_info, dest_info, words_list, returnTo, line_number, &ret_val);
-	clean_up(orig_info,dest_info);
+	clean_up(orig_info, dest_info);
 	return ret_val;
 }
 

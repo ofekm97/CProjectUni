@@ -78,7 +78,7 @@ void write_word_to_file(FILE *output, Word *word)
 int write_all_words_to_file(FILE *output, WordsList *words_list, int word_num)
 {
     Word *current = words_list->words;
-    
+
     while (current)
     {
         fprintf(output, "%04d ", word_num);
@@ -281,7 +281,7 @@ bool create_word_to_return_to(WordsToReturnToList *words_to_return_to_list, Word
 
 void print_word_to_return(WordToReturnTo *current, int index)
 {
-   /* printf("printing word %d:\n", index);*/
+    /* printf("printing word %d:\n", index);*/
     printf("line: %d\n", current->line_number);
     /*print_word(current->word);*/
 }
