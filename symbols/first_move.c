@@ -174,7 +174,7 @@ bool first_move(char *file_name)
 					dc += new_words_num;
 					break;
 
-				case EXTERN_COMMAND:											   /* label define as external */
+				case EXTERN_COMMAND:
 					if (is_legal_label(methods_list, label, line_number) == false) /* check if label name is legal */
 					{
 						error_flag = true;
@@ -187,8 +187,11 @@ bool first_move(char *file_name)
 						symbol_table = insert_symbol(symbol_table, label, 0, EXTERNAL, false);
 					else
 					{
-						printf("Line %d- Error: Label \"%s\" has already defined\n", line_number, label);
-						error_flag = true;
+						if (s -> attribute != EXTERNAL)
+						{
+							printf("Line %d- Error: Label \"%s\" has already defined\n", line_number, label);
+							error_flag = true;
+						}
 					}
 
 					break;

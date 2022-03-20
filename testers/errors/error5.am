@@ -1,4 +1,5 @@
 ; This is a program with errors
+ 
 ; 1 - Warning in err2.am line 4 - Label and .entry. Label "LABEL1" ignored
 LABEL1: .entry W
 ; 2 - ERROR in err2.am line 6 - Can't find label "LABEL1"
